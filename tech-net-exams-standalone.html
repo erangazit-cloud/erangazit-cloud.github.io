@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מבחני תרגול — טכנאי רשת</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F7; --surface:#FFFFFF; --surface2:#E3EAF3; --ink:#0B1729; --muted:#4A5C75; --line:#C9D4E2;
+  --cyan:#0E7490; --cyan-soft:#D3EEF4; --amber:#A75A06; --amber-soft:#FBEACB;
+  --ok:#0E7490; --bad:#B42318; --bad-soft:#F8DCD9;
+  --panel:#0B1729; --panel-2:#13243F; --panel-ink:#DCE7F5; --panel-muted:#7F93B0;
+  --led-off:#24395A; --led-ok:#22D3EE; --led-part:#FBBF24; --led-bad:#F87171;
+  --focus:#0E7490;
+  --serif:"Frank Ruhl Libre", "David Libre", Georgia, serif;
+  --sans:"Heebo", "Segoe UI", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1729; --surface:#11213A; --surface2:#182C4A; --ink:#E6EEF8; --muted:#97A9C3; --line:#24406A;
+    --cyan:#22D3EE; --cyan-soft:#0D3345; --amber:#FBBF24; --amber-soft:#3A2D0E;
+    --ok:#22D3EE; --bad:#F87171; --bad-soft:#3D1A20;
+    --panel:#07101F; --panel-2:#0F1E36; --panel-ink:#DCE7F5; --panel-muted:#7F93B0; --led-off:#1E3150;
+    --focus:#22D3EE; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1729; --surface:#11213A; --surface2:#182C4A; --ink:#E6EEF8; --muted:#97A9C3; --line:#24406A;
+  --cyan:#22D3EE; --cyan-soft:#0D3345; --amber:#FBBF24; --amber-soft:#3A2D0E;
+  --ok:#22D3EE; --bad:#F87171; --bad-soft:#3D1A20;
+  --panel:#07101F; --panel-2:#0F1E36; --panel-ink:#DCE7F5; --panel-muted:#7F93B0; --led-off:#1E3150;
+  --focus:#22D3EE; color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px);height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 72px}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;margin:0}
+p{margin:0 0 .6em}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.mono{font-family:var(--mono)}
+.cli{font-family:var(--mono);direction:ltr;unicode-bidi:plaintext;white-space:pre-wrap;text-align:left}
+pre.cli{margin:0;font-size:.875rem;line-height:1.5;background:var(--surface2);border-radius:6px;padding:10px 12px;overflow-x:auto}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:4px 12px;justify-content:space-between;flex-wrap:wrap;padding:10px 16px;max-width:760px;margin:0 auto}
+.brand{display:flex;align-items:baseline;gap:8px 10px;min-width:0;flex-wrap:wrap}
+.brand h1{font-size:1.25rem;font-weight:900}
+@media (max-width:520px){.brand h1{font-size:1.1rem}}
+.ver{font-family:var(--mono);font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 6px;white-space:nowrap}
+.ai-chip{font-size:.8rem;display:inline-flex;align-items:center;gap:6px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--led-off);display:inline-block}
+.dot.on{background:var(--led-ok);box-shadow:0 0 6px var(--led-ok)}
+.dot.wait{background:var(--led-part)}
+.notice{max-width:760px;margin:0 auto 4px;padding:0 16px}
+.notice div{border:1px solid var(--amber);background:var(--amber-soft);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:.875rem}
+.notice strong{font-weight:700}
+
+/* buttons */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 16px;font-weight:500;min-height:44px}
+.btn:hover{border-color:var(--cyan)}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#fff}
+:root:not([data-theme="light"]) .btn.primary{color:#04121F}
+@media (prefers-color-scheme: light){ .btn.primary{color:#fff} }
+:root[data-theme="light"] .btn.primary{color:#fff}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:.9rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:flex-end}
+.link{background:none;border:0;padding:0;color:var(--cyan);text-decoration:underline;text-underline-offset:3px;font-weight:500}
+
+/* segmented */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:8px 14px;min-height:40px;font-size:.95rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:500}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field>span{font-size:.9rem;color:var(--muted)}
+.field>.seg{justify-self:start;max-width:100%}
+
+/* panel hero */
+.panel{background:var(--panel);color:var(--panel-ink);border-radius:10px;padding:16px 16px 12px;margin:12px 0 18px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.panel-head h2{font-size:1.6rem;font-weight:900;color:var(--panel-ink)}
+.panel-head .big{font-family:var(--mono);font-size:.85rem;color:var(--panel-muted)}
+.prow{display:grid;grid-template-columns:118px 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--panel-2)}
+.tagl{background:#F4F6F8;color:#0B1729;border-radius:3px;padding:2px 8px;font-size:.8rem;font-weight:700;line-height:1.5;box-shadow:inset 0 -2px 0 rgba(11,23,41,.12);justify-self:start}
+.tagl small{display:block;font-family:var(--mono);font-weight:400;font-size:.7rem;color:#4A5C75}
+.leds{display:flex;flex-wrap:wrap;gap:4px;direction:rtl;padding-top:3px}
+.led{width:11px;height:11px;border-radius:2px;background:var(--led-off);border:0;padding:0;cursor:pointer}
+.led.ok{background:var(--led-ok);box-shadow:0 0 5px rgba(34,211,238,.6)}
+.led.part{background:var(--led-part)}
+.led.bad{background:var(--led-bad)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--panel-muted);margin-top:8px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-left:5px;vertical-align:middle}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card+.card{margin-top:14px}
+.card h3{font-size:1.2rem;margin-bottom:10px}
+.resume{border-color:var(--cyan);background:var(--cyan-soft)}
+.navlist{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.navlist .btn{text-align:center}
+@media (max-width:520px){.navlist{grid-template-columns:1fr}}
+
+/* exam */
+.ehead{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.ehead-in{max-width:760px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.ehead .ttl{font-weight:700}
+.ehead .meta{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+.strip{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:2px;max-width:760px;margin:0 auto;padding:0 16px 8px}
+.strip span{height:5px;border-radius:1px;background:var(--line)}
+.strip span.ans{background:var(--muted)}
+.strip span.ok{background:var(--led-ok)}
+.strip span.part{background:var(--led-part)}
+.strip span.bad{background:var(--led-bad)}
+.strip span.cur{outline:2px solid var(--ink);outline-offset:1px}
+.ports{background:var(--panel);border-radius:10px;padding:10px;display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin:12px 0}
+@media (max-width:420px){.ports{grid-template-columns:repeat(8,1fr)}}
+.port{aspect-ratio:1/1;border-radius:4px;border:1px solid #2B4268;background:#0E1C33;color:#8FA3C2;font-family:var(--mono);font-size:.72rem;display:grid;place-items:center;position:relative;padding:0;min-height:30px}
+.port::after{content:"";position:absolute;top:3px;left:3px;width:5px;height:5px;border-radius:50%;background:#24395A}
+.port.ans::after{background:#7F93B0}
+.port.ok::after{background:var(--led-ok);box-shadow:0 0 4px var(--led-ok)}
+.port.part::after{background:var(--led-part)}
+.port.bad::after{background:var(--led-bad)}
+.port.cur{border-color:var(--led-ok);color:#fff}
+.qmeta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:.85rem;color:var(--muted);margin-bottom:10px}
+.qmeta .ch{font-weight:700;color:var(--ink)}
+.qtext{font-size:1.18rem;font-weight:500;line-height:1.5;margin:0 0 14px}
+.opts{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:right;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:12px 14px;min-height:48px}
+.opt .k{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:.85rem;font-weight:700}
+.opt .t{flex:1;min-width:0}
+.opt.sel{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.opt.sel .k{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.opt.right{border-color:var(--ok);background:var(--cyan-soft)}
+.opt.right .k{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt:disabled{cursor:default;opacity:1}
+textarea{width:100%;min-height:130px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:10px 12px;resize:vertical;line-height:1.5}
+textarea.cli{min-height:160px;font-size:.92rem}
+.fb{margin-top:14px;border-radius:8px;padding:12px 14px;border:1px solid var(--line);background:var(--surface2)}
+.fb.ok{border-color:var(--ok);background:var(--cyan-soft)}
+.fb.part{border-color:var(--amber);background:var(--amber-soft)}
+.fb.bad{border-color:var(--bad);background:var(--bad-soft)}
+.fb h4{margin:0 0 6px;font-size:1rem}
+.fb .lbl{font-size:.82rem;color:var(--muted);margin:10px 0 2px;font-weight:700}
+.note{margin-top:10px;border-inline-start:3px solid var(--amber);padding:4px 10px;font-size:.92rem}
+.note b{display:block;font-size:.8rem;color:var(--amber)}
+.actions{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap}
+.actions .row{gap:8px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--cyan);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-2px;margin-inline-end:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.spin{animation:none}}
+.selfgrade{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* results */
+.score{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.score .n{font-family:var(--serif);font-size:4rem;font-weight:900;line-height:1}
+.score .of{color:var(--muted)}
+.bars{display:grid;gap:6px;margin-top:6px}
+.bar{display:grid;grid-template-columns:minmax(120px,40%) 1fr 48px;gap:10px;align-items:center;font-size:.9rem}
+.bar .track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar .fill{height:100%;background:var(--cyan)}
+.bar.weak .fill{background:var(--amber)}
+.bar .pct{font-family:var(--mono);font-size:.8rem;text-align:left;direction:ltr}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:.88rem;min-height:34px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rv{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin-bottom:8px}
+.rv>button{display:flex;gap:10px;width:100%;text-align:right;background:none;border:0;padding:12px 14px;align-items:flex-start}
+.rv .num{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;width:24px;padding-top:2px}
+.rv .st{flex:none;width:10px;height:10px;border-radius:2px;margin-top:7px;background:var(--line)}
+.rv .st.ok{background:var(--led-ok)} .rv .st.part{background:var(--led-part)} .rv .st.bad{background:var(--led-bad)} .rv .st.pend{background:transparent;border:2px solid var(--amber)}
+.rv .body{padding:0 14px 14px}
+.kv{margin:8px 0}
+.kv .lbl{font-size:.82rem;color:var(--muted);font-weight:700}
+.aibox{margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--surface2)}
+.aibox ul,.aibox ol,.msg ul,.msg ol{margin:.2em 0 .6em;padding-inline-start:1.2em}
+.mini{margin-top:10px;border:1px dashed var(--cyan);border-radius:8px;padding:12px}
+
+/* bank */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:10px 0}
+.tabs .chip{white-space:nowrap}
+.search{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface);min-height:44px}
+.subh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 6px}
+.subh h3{font-size:1.1rem}
+.bq{border-bottom:1px solid var(--line)}
+.bq>button{display:flex;gap:10px;width:100%;text-align:right;background:none;border:0;padding:10px 2px;align-items:flex-start}
+.bq .body{padding:0 2px 12px 0}
+
+/* history */
+.hrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:right}
+.hrow .sc{font-family:var(--mono);font-weight:500;font-size:1.1rem}
+
+/* modal + drawer */
+.scrim{position:fixed;inset:0;background:rgba(5,12,24,.55);z-index:30;display:none}
+.scrim.show{display:block}
+.modal{position:fixed;z-index:31;left:50%;top:50%;transform:translate(-50%,-50%);width:min(420px,calc(100% - 32px));background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:none}
+.modal.show{display:block}
+.modal h3{margin-bottom:8px}
+.drawer{position:fixed;z-index:32;background:var(--surface);border:1px solid var(--line);display:none;flex-direction:column}
+.drawer.show{display:flex}
+@media (min-width:900px){
+  .drawer{top:0;bottom:0;left:0;width:420px;border-radius:0;border-width:0 0 0 1px;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+}
+@media (max-width:899px){
+  .drawer{left:0;right:0;bottom:0;height:min(82%,680px);border-radius:14px 14px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.dh h3{font-size:1.1rem}
+.dh .sub{font-size:.8rem;color:var(--muted)}
+.msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:92%;border-radius:10px;padding:8px 12px;font-size:.95rem}
+.msg.u{align-self:flex-start;background:var(--ink);color:var(--bg)}
+.msg.a{align-self:flex-end;background:var(--surface2)}
+.msg.err{border:1px solid var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 8px}
+.din{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);align-items:flex-end}
+.din textarea{min-height:44px;height:44px;max-height:140px;flex:1}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;z-index:40;font-size:.9rem;display:none}
+.toast.show{display:block}
+.foot{margin-top:28px;font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="scrim" id="scrim"></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt"><h3 id="mt"></h3><p id="mb" class="muted"></p><div class="row end" id="mf"></div></div>
+<aside class="drawer" id="drawer" aria-label="המורה הדיגיטלי">
+  <div class="dh"><div><h3>המורה הדיגיטלי</h3><div class="sub" id="dsub"></div></div><button class="btn sm ghost" data-act="tclose">סגירה</button></div>
+  <div class="msgs" id="msgs" aria-live="polite"></div>
+  <div class="chips" id="tchips"></div>
+  <form class="din" id="tform"><textarea id="tin" placeholder="מה לא ברור?" aria-label="שאלה למורה"></textarea><button class="btn primary sm" id="tsend" type="submit">שליחה</button></form>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+<script>
+"use strict";
+const VERSION="1.2";
+const B=[];
+// פרק תקשורת — 75 שאלות. מבנה פריט: [תת-נושא, מס׳ בחוברת, שאלה, תשובת מפתח, אפשרויות (הנכונה ראשונה), תוספות]
+B.push(
+["c1",1,"מהם שלושת מגזרי מערך התקשוב?","בניין הכוח, הפעלת הכוח ומימוש הכוח.",["בניין הכוח, הפעלת הכוח, מימוש הכוח","תכנון הכוח, הפעלת הכוח, תחזוקת הכוח","בניין הכוח, הכשרת הכוח, אבטחת הכוח","מטה, מבצעים, לוגיסטיקה"]],
+["c1",2,"מה כולל מגזר ״בניין הכוח״?","מחלקת תקשוב.",["מחלקת תקשוב","ענף תקשוב למבצעים","יחידה 502","גפי התקשוב בבסיסים"]],
+["c1",3,"מה כולל מגזר ״הפעלת הכוח״?","ענף תקשוב למבצעים ויחשת״פ.",["ענף תקשוב למבצעים ויחשת״פ","מחלקת תקשוב","יחידה 502 וגפי התקשוב","יב״אות בלבד"]],
+["c1",4,"מה כולל מגזר ״מימוש הכוח״?","יחידה 502, גפי התקשוב ויב״אות.",["יחידה 502, גפי התקשוב ויב״אות","מחלקת תקשוב","ענף תקשוב למבצעים ויחשת״פ","מחלקת תקשוב ויחשת״פ"]],
+["c1",5,"סדר את מסלול ההכשרה במקצוע: הכשרה ראשונית, הכשרה מתקדמת סף, נקודה יצרנית, הכשרה מתקדמת רף.","הכשרה ראשונית ← נקודה יצרנית ← הכשרה מתקדמת רף ← הכשרה מתקדמת סף.",["הכשרה ראשונית ← נקודה יצרנית ← הכשרה מתקדמת רף ← הכשרה מתקדמת סף","הכשרה ראשונית ← הכשרה מתקדמת סף ← נקודה יצרנית ← הכשרה מתקדמת רף","הכשרה ראשונית ← הכשרה מתקדמת רף ← הכשרה מתקדמת סף ← נקודה יצרנית","נקודה יצרנית ← הכשרה ראשונית ← הכשרה מתקדמת סף ← הכשרה מתקדמת רף"],{mq:"מהו הסדר הנכון של מסלול ההכשרה במקצוע?"}],
+["c2",6,"מהם ארבעת הדברים הנחוצים ליצירת תקשורת?","שפה משותפת (שני הצדדים מדברים באותו פרוטוקול), צד שולח וצד מקבל, אמצעי להעברת המידע (תווך), וחוקים שלפיהם יעבור המידע.",["שפה משותפת, שולח ומקבל, אמצעי להעברת מידע, חוקים להעברת המידע","שולח, מקבל, נתב ומתג","כתובת IP, כתובת MAC, כבל וספק כוח","מקודד, מפענח, מגבר ואנטנה"]],
+["c2",7,"ממה מורכב המבנה העקרוני של רשת תקשורת?","משתמשים (Users) — המנויים לרשת; ממשקי גישה (Applications) — המקשרים בין המשתמשים לרשת; תווך (Backbone) — הרשת עצמה שמקשרת בין המשתמשים.",["משתמשים, ממשקי גישה ותווך","שרתים, לקוחות וחומת אש","שכבה פיזית, שכבת רשת ושכבת יישום","מתגים, נתבים ונקודות קצה"]],
+["c2",8,"ציין שלושה הבדלים בין תקשורת אנלוגית לספרתית.","לפי החוברת: אנלוגית משדרת לטווחים ארוכים יותר; יישום אנלוגי זול יותר; אנלוגית רגישה יותר לרעשים.",["תקשורת אנלוגית רגישה יותר לרעשים מתקשורת ספרתית","תקשורת ספרתית רגישה יותר לרעשים מתקשורת אנלוגית","יישום תקשורת אנלוגית יקר יותר מיישום ספרתית","תקשורת ספרתית אינה צריכה תווך פיזי"],{mq:"איזה מההיגדים הבאים הוא הבדל נכון בין תקשורת אנלוגית לספרתית?",n:"בחוברת כתוב שאנלוגית מגיעה לטווחים ארוכים יותר. בפועל, אות ספרתי עובר שחזור (Regeneration) בדרך ולכן מגיע רחוק בלי שהרעש מצטבר. כדאי לזכור את תשובת החוברת, אבל ההבדל הבטוח ביותר הוא הרגישות לרעש."}],
+["c2",9,"מהי תקשורת טורית ומהי תקשורת מקבילית?","טורית: העברת מידע מנקודה לנקודה על קו פיזי אחד, סיבית אחר סיבית. מקבילית: העברת מידע על כמה קווים פיזיים במקביל.",["טורית — סיבית אחר סיבית על קו אחד; מקבילית — כמה סיביות במקביל על כמה קווים","טורית — כמה קווים במקביל; מקבילית — קו אחד","טורית — שידור לכל התחנות; מקבילית — שידור לתחנה אחת","טורית — עם קו שעון; מקבילית — בלי קו שעון"]],
+["c2",10,"מהי תקשורת אסינכרונית וממה בנוי ה-BYTE שלה? פרט והסבר.","תקשורת שאין בה קו שעון משותף. כל BYTE (8 סיביות) נשלח עם 2 סיביות נוספות: START BIT שמסמנת את תחילת הבית ו-STOP BIT שמסמנת את סופו (START | BYTE | STOP).",["אין קו שעון משותף; כל בית נשלח עם START BIT בתחילתו ו-STOP BIT בסופו","יש קו שעון משותף; המידע נשלח במסגרות ארוכות עם FLAG","אין קו שעון; המידע נשלח בלי סיביות מסגור","יש קו שעון משותף; כל בית נשלח עם סיבית זוגיות בלבד"]],
+["c2",11,"מהי תקשורת סינכרונית וממה בנויה המסגרת שלה? פרט והסבר.","תקשורת שיש בה קו שעון משותף. משדרים כמות גדולה של סיביות בתוך מסגרת (FRAME) ארוכה: FLAG/SYNC בתחילתה, בתים של מידע, ו-FLAG/SYNC בסופה.",["יש קו שעון משותף; מסגרת ארוכה שמתחילה ומסתיימת ב-FLAG/SYNC ובאמצע בתי מידע","אין קו שעון; כל בית עם START ו-STOP","יש קו שעון; כל סיבית נשלחת במסגרת נפרדת","אין קו שעון; המסגרת מתחילה ב-PREAMBLE ומסתיימת ב-FCS"]],
+["c2",12,"בשיטת HALF DUPLEX, כאשר תחנה A שולחת הודעה לתחנה B, האם תחנה B תוכל לשלוח הודעה בו־זמנית?","לא. ב-HALF DUPLEX יש קו אחד ששני הצדדים מעבירים עליו מידע, ולכן שידור בו־זמני יגרום להתנגשות.",["לא — יש קו אחד משותף, ושידור בו־זמני יגרום להתנגשות","כן — כל צד משדר בתדר אחר","כן — זו בדיוק ההגדרה של HALF DUPLEX","לא — ב-HALF DUPLEX רק תחנה A יכולה לשדר אי פעם"]],
+["c3",13,"סדר את השכבות של מודל ה-OSI.","1 פיזית (Physical), 2 עורק (Data Link), 3 רשת (Network), 4 תעבורה (Transport), 5 שיחה (Session), 6 הצגה (Presentation), 7 יישום (Application).",["פיזית, עורק, רשת, תעבורה, שיחה, הצגה, יישום","פיזית, רשת, עורק, תעבורה, הצגה, שיחה, יישום","עורק, פיזית, רשת, תעבורה, שיחה, יישום, הצגה","פיזית, עורק, תעבורה, רשת, שיחה, הצגה, יישום"],{mq:"מהו הסדר הנכון של שכבות מודל ה-OSI, משכבה 1 עד שכבה 7?"}],
+["c3",14,"באיזו שכבה המידע מחולק ל-BITS?","בשכבה הפיזית (1). היא אחראית על שידור ביטים גולמיים בערוץ ועל כך שהאותות החשמליים, האופטיים או הרדיו יועברו ויתקבלו כראוי.",["השכבה הפיזית","שכבת העורק","שכבת הרשת","שכבת התעבורה"]],
+["c3",15,"הסבר מהי כתובת MAC, כיצד היא בנויה ובאיזו שכבה היא מיושמת.","כתובת פיזית ייחודית שמזהה כל כרטיס רשת או התקן תקשורת. 48 סיביות: 24 הראשונות הן קידומת היצרן, ו-24 האחרונות הן מספר סידורי של ההתקן. מיושמת בשכבת העורק (2).",["48 סיביות: 24 קידומת יצרן ו-24 מספר סידורי; שכבה 2","32 סיביות בארבעה מקטעים; שכבה 3","48 סיביות: 24 כתובת רשת ו-24 כתובת תחנה; שכבה 3","64 סיביות שנקבעות על ידי שרת DHCP; שכבה 2"],{mq:"כמה סיביות יש בכתובת MAC, כיצד הן מחולקות ובאיזו שכבה היא מיושמת?",v:[["איזו כתובת משמשת לזיהוי פיזי של כרטיס רשת, וצרובה עליו על ידי היצרן?",["כתובת MAC","כתובת IP","Default Gateway","Subnet Mask"]]]}],
+["c3",16,"הסבר מהי כתובת IP, כיצד היא בנויה ובאיזו שכבה היא מיושמת.","כתובת לוגית לזיהוי נקודות ברשתות שמשתמשות בפרוטוקול IP. בנויה מ-32 סיביות בארבעה מקטעים של 8 סיביות (למשל 192.21.30.68). מיושמת בשכבת הרשת (3), שתפקידה להעביר מנות (Packets) בין רשתות שונות.",["כתובת לוגית של 32 סיביות בארבעה מקטעים של 8; שכבה 3","כתובת פיזית של 48 סיביות; שכבה 2","כתובת לוגית של 48 סיביות בשישה מקטעים; שכבה 3","כתובת פיזית של 32 סיביות; שכבה 4"],{mq:"מה נכון לגבי כתובת IP (גרסה 4)?"}],
+["c3",17,"איזו שכבה במודל מפקחת על תעבורת המידע ברשת?","שכבת התעבורה (4). מאפשרת תקשורת אמינה מקצה לקצה, מנהלת בקרת שגיאות ואמינות, מפקחת על זרימת הנתונים כדי לא להציף את המקבל, ומחלקת את המידע למקטעים (Segments).",["שכבת התעבורה","שכבת השיחה","שכבת הרשת","שכבת ההצגה"]],
+["c3",18,"איזו שכבה אחראית על הקמת שיחה וניתוקה?","שכבת השיחה (5). יוצרת, מנהלת וסוגרת שיחה בין שני הצדדים, דואגת לסנכרון, מאפשרת לחדש תקשורת שנקטעה וקובעת אם השיחה חד־כיוונית או דו־כיוונית.",["שכבת השיחה","שכבת התעבורה","שכבת היישום","שכבת העורק"]],
+["c3",19,"איזו שכבה אחראית על הצפנת המידע?","שכבת ההצגה (6). אחראית על תרגום פורמטים, קידוד, דחיסה, הצפנה ופענוח — כדי ששני הצדדים ״יבינו״ זה את זה.",["שכבת ההצגה","שכבת השיחה","שכבת התעבורה","שכבת הרשת"]],
+["c3",20,"איזו שכבה מהווה ממשק בין המשתמש לרשת?","שכבת היישום (7). אחראית על זמינות התקשורת מול הצד השני, למשל אפליקציית וואטסאפ או דפדפן.",["שכבת היישום","שכבת ההצגה","שכבת השיחה","השכבה הפיזית"]],
+["c3",21,"מהו תהליך האריזה?","כששולחים מידע, הנתונים נעטפים בכל שכבה בכותרת (HEADER) שמאפיינת את הפרוטוקול שלה, לפני העברתם ברשת, ובין היתר מתחלקים למנות מידע. בצד המקבל מתבצע תהליך הפוך של פריקה.",["עטיפת הנתונים בכל שכבה בכותרת (Header) של הפרוטוקול לפני השליחה","דחיסת הקבצים לפני שמירה בדיסק","הצפנת המידע בשכבת ההצגה בלבד","חיבור כמה כבלים פיזיים לקו לוגי אחד"]],
+["c3",22,"התאם בין השכבות במודל TCP/IP למודל OSI.","NETWORK ACCESS = פיזית + עורק; INTERNET = רשת; HOST-TO-HOST = תעבורה; APPLICATION = שיחה + הצגה + יישום.",["APPLICATION: שיחה, הצגה ויישום; HOST-TO-HOST: תעבורה; INTERNET: רשת; NETWORK ACCESS: פיזית ועורק","APPLICATION: יישום בלבד; HOST-TO-HOST: שיחה ותעבורה; INTERNET: רשת ועורק; NETWORK ACCESS: פיזית","APPLICATION: הצגה ויישום; HOST-TO-HOST: שיחה; INTERNET: תעבורה ורשת; NETWORK ACCESS: פיזית ועורק","APPLICATION: שיחה, הצגה ויישום; HOST-TO-HOST: רשת; INTERNET: עורק; NETWORK ACCESS: פיזית"],{mq:"איזו התאמה בין מודל TCP/IP למודל OSI נכונה?",v:[["לאיזו שכבה במודל OSI מתאימה שכבת INTERNET במודל TCP/IP?",["שכבת הרשת","שכבת העורק","שכבת התעבורה","שכבת היישום"]]]}],
+["c4",23,"מהו זוג שזור?","כבל שמורכב מזוגות חוטי נחושת מבודדים זה מזה, הכרוכים (שזורים) זה סביב זה, ועליהם בידוד נוסף. השזירה מקטינה הפרעות. סוגים: UTP (ללא סיכוך) ו-STP (עם סיכוך).",["זוגות חוטי נחושת מבודדים הכרוכים זה סביב זה, עם בידוד חיצוני","סיב זכוכית עם ליבה וציפוי","מוליך נחושת יחיד עם רשת סיכוך סביבו (קואקסיאלי)","שני סיבים אופטיים — אחד לשידור ואחד לקליטה"]],
+["c4",24,"מהו RJ-45?","מחבר סטנדרטי לחיבור רשתות, עם 8 גידי נחושת בשורה, לכבלי זוג שזור (UTP/STP). ב-10/100Mbps משתמשים ב-4 גידים (1, 2, 3, 6); ב-1Gbps בכל 8 הגידים.",["מחבר 8 גידים לכבלי זוג שזור; ב-10/100Mbps משתמשים ב-4 גידים וב-1Gbps בכל ה-8","מחבר 9 פינים לכבל קונסול בצד המחשב","מחבר 4 גידים לקו טלפון אנלוגי","מחבר לסיב אופטי מסוג Single Mode"],{n:"בחוברת כתוב שגידים 1 ו-2 לקליטה ו-3 ו-6 לשידור. זה נכון מצד המתג; בכרטיס הרשת של המחשב זה הפוך (1,2 שידור; 3,6 קליטה). לכן כבל ישר מחבר ביניהם."}],
+["c4",25,"מה ההבדל בין כבל ישר לכבל מוצלב?","כבל ישר: כל הגידים מחוברים באותו סדר בשני הצדדים; מחבר ציודים מסוגים שונים (מחשב–מתג, נתב–מתג). כבל מוצלב: גידי השידור בצד אחד מחוברים לגידי הקליטה בצד השני (1↔3, 2↔6); מחבר ציודים זהים (מחשב–מחשב, מתג–מתג).",["ישר — לציודים שונים (מחשב–מתג); מוצלב — לציודים זהים (מתג–מתג)","ישר — לציודים זהים; מוצלב — לציודים שונים","ישר — לסיבים; מוצלב — לנחושת","ישר — לחיבור קונסול; מוצלב — לחיבור לאינטרנט"],{v:[["איזה כבל נשתמש בו כדי לחבר מתג למתג (ללא Auto-MDIX)?",["כבל מוצלב","כבל ישר","כבל קונסול","כבל הפוך (Rollover)"]]]}],
+["c4",26,"איזה סוג כבל הוא כבל CONSOLE?","כבל הפוך (Rollover). מתחבר ליציאת ה-Console של נתב או מתג Cisco לצורך הגדרתו; בצידו השני מחבר DB9 בעל 9 פינים (למחשב).",["כבל הפוך (Rollover) — RJ-45 לפורט הקונסול ו-DB9 בצד המחשב","כבל ישר — RJ-45 בשני הצדדים","כבל מוצלב — RJ-45 בשני הצדדים","כבל סיב — SFP בשני הצדדים"]],
+["c4",27,"מהו SFP?","Small Form-factor Pluggable — רכיב שמתאם בין כבל סיב אופטי או כבל נחושת לבין ציוד כמו מתג או נתב. מאפשר להשתמש באותו ציוד גם עם נחושת וגם עם סיבים.",["מודול מתאם שמחבר סיב אופטי או נחושת לפורט במתג או בנתב","פרוטוקול לגילוי שכנים","סוג של כבל קונסול","תקן לחיבור דיסקים קשיחים"]],
+["c4",28,"מהו מחבר ה-BASE-T/F?","מחבר במהירויות 10/100/1000Mbps. BASE = Baseband (שיטת השידור), T = Twisted Pair (זוג שזור), F = Fiber (סיב אופטי).",["BASE = Baseband (שיטת השידור), T = זוג שזור, F = סיב אופטי","BASE = כבל בסיס, T = Telephone, F = Fast","BASE = Broadband, T = Transmit, F = Full Duplex","BASE = מהירות בסיס, T = Trunk, F = Frame"],{mq:"במונחים כמו 100BASE-T או 1000BASE-F, מה מציינים BASE, T ו-F?"}],
+["c4",29,"באילו מהירויות תומכים המחברים ETHERNET, FASTETHERNET ו-GIGAETHERNET?","Ethernet — 10Mbps; FastEthernet — 100Mbps; GigaEthernet — 1000Mbps (1Gbps).",["10Mbps, 100Mbps, 1000Mbps","100Mbps, 1000Mbps, 10Gbps","10Mbps, 54Mbps, 100Mbps","1Mbps, 10Mbps, 100Mbps"],{mq:"מה המהירויות של Ethernet, FastEthernet ו-GigaEthernet (לפי הסדר)?",v:[["באיזו מהירות תומך פורט FastEthernet?",["100Mbps","10Mbps","1000Mbps","10Gbps"]]]}],
+["c5",30,"מהו רעש? אילו סוגי רעשים קיימים?","רעש הוא אות בלתי רצוי שמפריע לקליטת האות הרצוי. סוגים: רעש לבן — נגרם מתנועת אלקטרונים בחומר, משפיע על כל התדרים ותלוי בטמפרטורה; פיקים — קפיצות מתח קצרות (ברקים, ניצוצות, מנועים); רעש ליקוט — השראה מקווי העברה סמוכים לקו התקשורת.",["רעש לבן, פיקים ורעש ליקוט","רעש לבן, רעש ורוד ורעש אדום","פיקים, הד ועיוות","רעש ליקוט, התנגשויות ואובדן מנות"],{mq:"אילו שלושה סוגי רעשים מוזכרים בחומר?",v:[["איזה סוג רעש נגרם מהשראה של קווי העברה הנמצאים בסמוך לקו התקשורת?",["רעש ליקוט","רעש לבן","פיקים","רעש תרמי"]]]}],
+["c5",31,"מהו המבנה העקרוני של סיב אופטי?","ליבה (Core) — החלק המרכזי שבו עובר האור, עשויה סיליקה, בעלת מקדם שבירה גבוה; ציפוי (Cladding) — עוטף את הליבה, מקדם שבירה נמוך יותר, יוצר החזרת אור מלאה לתוך הליבה; מעטה (Jacket) — מגן ומקנה גמישות. המידע עובר כאור (1) והיעדר אור (0).",["ליבה, ציפוי בעל מקדם שבירה נמוך יותר, ומעטה מגן","ליבת נחושת, בידוד ורשת סיכוך","ליבה, מגבר ומחבר RJ-45","ציפוי, ליבה בעלת מקדם שבירה נמוך יותר, ומעטה"],{v:[["מדוע לציפוי (Cladding) של סיב אופטי יש מקדם שבירה נמוך מזה של הליבה?",["כדי ליצור החזרה מלאה של האור לתוך הליבה","כדי להגן על הסיב מפני כיפוף","כדי לאפשר העברת חשמל לצד המידע","כדי להאט את קרן האור ולמנוע התנגשויות"]]]}],
+["c5",32,"מה ההבדל בין סיב MULTIMODE לסיב SINGLEMODE?","Multi Mode: ליבה רחבה, נושא קרני אור רבות במסלולים שונים, מקור אור זול (LED). Single Mode: ליבה דקה שמאלצת קרן אור אחת בלבד, מקור אור לייזר יקר, ומתאים לטווחים ארוכים.",["MM — ליבה רחבה, קרניים רבות, LED; SM — ליבה דקה, קרן אחת, לייזר","MM — ליבה דקה, לייזר; SM — ליבה רחבה, LED","MM — לנחושת; SM — לסיב","MM — לטווחים ארוכים; SM — לטווחים קצרים בלבד"]],
+["c6",33,"מהי טופולוגיה, ומהי טופולוגיה פיזית ולוגית?","טופולוגיה מתארת את הסידור הפיזי או הלוגי של הציודים ברשת. פיזית — הציודים והקווים כפי שהם בפועל (כבלים, סיבים, מחברים). לוגית — הקשרים הלוגיים, מיקום התקנים לפי כתובות (למשל IP) ולא לפי מיקום פיזי; למשל ארבעה קווים פיזיים יכולים להיראות כקו לוגי אחד.",["פיזית — הקווים והציודים בפועל; לוגית — הקשרים הלוגיים (למשל לפי כתובות IP)","פיזית — לפי כתובות IP; לוגית — לפי כבלים","פיזית — ברשת אלחוטית; לוגית — ברשת קווית","פיזית ולוגית הן שמות שונים לאותו דבר"]],
+["c6",34,"איזו טופולוגיה אבחר כשארצה שרידות מקסימלית ברשת?","רשת יהלום (Full Mesh) — כל עמדה מחוברת ישירות לכל העמדות האחרות.",["רשת יהלום (Mesh מלאה) — כל עמדה מחוברת ישירות לכל האחרות","כוכב","אפיק (Bus)","טבעת"]],
+["c6",35,"מהו החיסרון בטופולוגיית ״כוכב״?","כל העמדות מתחברות לעמדה מרכזית אחת, ולכן אם היא נופלת — אין תקשורת בין שאר העמדות (נקודת כשל יחידה).",["נפילת הרכיב המרכזי משביתה את התקשורת בין כל העמדות","כל עמדה צריכה כבל לכל עמדה אחרת","אי אפשר להוסיף עמדות חדשות","המידע עובר בכל העמדות עד שמגיע ליעד"]],
+["c6",36,"מה ההבדל בין RIT ל-ODF?","RIT — פאנל מחברי נחושת (RJ-45) בארון התקשורת; כל נקודה בו היא ״נקודה שקופה״ — העתק של נקודת הקצה בקיר. מאפשר לבודד תקלה בין המחשב למתג. ODF — אותה מטרה ואופן פעולה, אך לסיבים אופטיים.",["RIT — פאנל לנחושת (RJ-45); ODF — פאנל לסיבים אופטיים","RIT — לסיבים; ODF — לנחושת","RIT — מתג; ODF — נתב","RIT — שרת קבצים; ODF — שרת גיבוי"]],
+["c6",37,"מהו BCC ומהו SBC?","BCC (Base Communication Control) — האתר הראשי שבו יושבים פיזית כל ציודי התקשורת. SBC (Second Base Communication) — אתר גיבוי עם ציודים זהים לציודים הקריטיים ב-BCC, לשרידות.",["BCC — אתר התקשורת הראשי; SBC — אתר גיבוי עם ציודים קריטיים זהים","BCC — אתר גיבוי; SBC — אתר ראשי","BCC — סוג כבל; SBC — סוג מחבר","BCC — שרת דוא״ל; SBC — שרת DNS"]],
+["c7",38,"מה ההבדל בין הודעת BROADCAST להודעת MULTICAST?","Broadcast — נשלחת ממקור אחד לכל התחנות ברשת. Multicast — חבילה אחת נשלחת לקבוצה מוגדרת של רכיבי רשת.",["Broadcast — לכל התחנות ברשת; Multicast — לקבוצה מוגדרת","Broadcast — לתחנה אחת; Multicast — לכל התחנות","Broadcast — רק בין נתבים; Multicast — רק בין מתגים","אין הבדל, אלה שני שמות לאותו דבר"]],
+["c7",39,"מהם הדברים העיקריים שמשפיעים על COLLISION DOMAIN?","Collision Domain הוא המרחב שבו יכולה להיווצר התנגשות (רלוונטי בעיקר ב-Half Duplex). מושפע ממספר התחנות המחוברות לקו ומזמן השידור של התחנות.",["מספר התחנות המחוברות לקו וזמן השידור שלהן","סוג מערכת ההפעלה ונפח הזיכרון","אורך כתובת ה-IP וסוג המחבר","מספר ה-VLANים והפרוטוקול STP"]],
+["c7",40,"הסבר את עיקרון הפעולה של רשת ETHERNET.","CSMA/CD: התחנה מאזינה לקו; אם הקו תפוס — ממשיכה להאזין; אם פנוי — משדרת ובמקביל מאזינה. אם זוהתה התנגשות — מפסיקה מיד, שולחת אות שגיאה (Jam), מחכה זמן קצר ומתחילה שוב להאזין.",["CSMA/CD — האזנה לקו, שידור כשהוא פנוי, ובהתנגשות עצירה, אות שגיאה והמתנה","Token Passing — רק מי שמחזיק אסימון משדר","CSMA/CA — הימנעות מהתנגשות באמצעות אישורים מראש","TDMA — לכל תחנה משבצת זמן קבועה"]],
+["c7",41,"מה תפקיד שדה ה-PREAMBLE במסגרת ה-ETHERNET?","ליצור סנכרון בין השולח ליעד.",["סנכרון בין השולח למקבל","גילוי שגיאות","ציון כתובת היעד","ציון סוג הפרוטוקול"]],
+["c7",42,"האם נשתמש בכתובת IP בשדות D.A ו-S.A במסגרת ה-ETHERNET?","לא. בשדות כתובת היעד (D.A) וכתובת המקור (S.A) במסגרת ה-Ethernet משתמשים בכתובות MAC.",["לא — בשדות אלה משתמשים בכתובות MAC","כן — שם נמצאות כתובות ה-IP","רק בשדה D.A","רק כאשר מדובר ב-Broadcast"]],
+["c7",43,"מה תפקידו של שדה ה-FCS?","גילוי שגיאות במסגרת.",["גילוי שגיאות במסגרת","סנכרון בין השולח למקבל","ציון אורך המסגרת","ציון כתובת המקור"]],
+["c7",44,"באיזו שכבה במודל ה-OSI פועל המתג?","בשכבה השנייה (עורק), כי הוא עובד עם כתובות MAC.",["שכבה 2 — עורק","שכבה 1 — פיזית","שכבה 3 — רשת","שכבה 4 — תעבורה"]],
+["c7",45,"מהי טבלת ה-CAM?","טבלה במתג שאוגרת את כתובות ה-MAC שהוא מכיר ומקשרת אותן לפורטים שמהם למד אותן; בנוסף יודעת לשייך VLAN לפורט.",["טבלה במתג שמקשרת כתובות MAC לפורטים","טבלת ניתוב בנתב","טבלה שמקשרת כתובות IP לכתובות MAC במחשב","טבלת הכתובות של שרת DHCP"]],
+["c7",46,"הסבר את השלבים שהמתג עובר בעת למידת כתובות MAC.","Learning — כשמגיעה מסגרת, המתג קורא את כתובת המקור ומוסיף לטבלה אם אינה קיימת. Flooding — אם כתובת היעד לא בטבלת ה-CAM, מציף את המסגרת לכל הפורטים כדי לגלות היכן היעד. Filtering — רק המחשב שההודעה מיועדת אליו מגיב, השאר זורקים אותה. Aging — כתובת ללא פעילות 5 דקות נמחקת. Forwarding — אם היעד ידוע, המסגרת נשלחת רק לפורט הרלוונטי.",["מציף (Flooding) את המסגרת לכל הפורטים מלבד הפורט שממנו הגיעה","זורק את המסגרת","שולח את המסגרת לנתב","שולח הודעת שגיאה לשולח"],{mq:"מה עושה המתג כשמגיעה מסגרת שכתובת היעד שלה אינה מופיעה בטבלת ה-CAM?",v:[["אחרי כמה זמן ללא פעילות נמחקת כתובת מטבלת ה-CAM (תהליך Aging), לפי החומר?",["5 דקות","30 שניות","24 שעות","הכתובת לעולם אינה נמחקת"]],["בשלב Learning, איזו כתובת קורא המתג מהמסגרת כדי לעדכן את הטבלה?",["כתובת ה-MAC של המקור","כתובת ה-MAC של היעד","כתובת ה-IP של היעד","כתובת ה-IP של המקור"]]]}],
+["c8",47,"מהו VLAN?","טכנולוגיה שמאפשרת ליצור רשתות LAN וירטואליות (תתי־רשתות) על אותו מתג — חלוקה לוגית לרשתות נפרדות.",["חלוקה לוגית של מתג לכמה רשתות LAN וירטואליות נפרדות","רשת אלחוטית ארגונית","חיבור של כמה כבלים פיזיים לקו לוגי אחד","סוג של חומת אש"]],
+["c8",48,"אם ארצה להעביר כמה VLANים בין מתג למתג, באיזה סוג עורק אשתמש?","עורק מסוג TRUNK.",["TRUNK","ACCESS","CONSOLE","EtherChannel בלבד"]],
+["c8",49,"כיצד יודע המתג לזהות את ה-VLAN שאליו משויכת חבילה?","בזכות התיוג (TAGGING) במסגרת ה-Ethernet.",["לפי התיוג (Tagging) במסגרת ה-Ethernet","לפי כתובת ה-IP של המקור","לפי שדה ה-FCS","לפי כתובת ה-MAC של היעד בלבד"]],
+["c8",50,"כיצד אעביר חבילה מ-VLAN ל-VLAN?","באמצעות נתב (או מתג רמה 3), שתפקידו להעביר מידע בין רשתות שונות.",["באמצעות נתב (או מתג רמה 3)","באמצעות מתג רמה 2 בלבד","באמצעות כבל מוצלב","באמצעות שרת DHCP"]],
+["c8",51,"מה ההבדל בין VOICE VLAN ל-VLAN?","לפי החוברת: VOICE VLAN מעביר רק שמע (תעבורת הטלפון), ואילו VLAN רגיל מעביר גם שמע וגם מידע רגיל.",["VOICE VLAN ייעודי לתעבורת קול של הטלפון; VLAN רגיל משמש לנתונים","VOICE VLAN משמש לניהול המתג","VOICE VLAN עובר רק על סיבים אופטיים","VOICE VLAN הוא שם אחר ל-TRUNK"],{n:"בפועל מגדירים בפורט אחד גם VLAN לנתוני המחשב וגם Voice VLAN לטלפון, כדי להפריד את תעבורת הקול ולתת לה עדיפות."}],
+["c8",52,"מהם ה-VOICE VLANים שבהם משתמשים בחיל האוויר?","310 ו-311.",["310 ו-311","10 ו-20","100 ו-200","1 ו-1002"]],
+["c8",53,"אילו בעיות יכולות להיווצר בעת שימוש בתצורה מגובה (עם לולאות)?","MAC Flapping — הריסת טבלת ה-CAM, כי המתג לומד כתובות זהות משני פורטים שונים. Broadcast Storm — הפצת הודעות Broadcast בצורה אינסופית.",["MAC Flapping ו-Broadcast Storm","Collision ו-Jitter","IP Conflict ו-APIPA","Crosstalk ורעש לבן"]],
+["c9",54,"הסבר ופרט את השלבים בפרוטוקול ה-STP.","1 בחירת ה-ROOT BRIDGE — המתג ״הטוב ביותר״ שאחראי על הטופולוגיה, לפי ערך PRIORITY (0–65535, ברירת מחדל 32768, הנמוך זוכה). 2 בחירת ROOT PORT — בכל מתג, הפורט שדרכו הדרך ״המהירה״ ביותר ל-ROOT, לפי ה-Cost של העורקים. 3 בחירת DESIGNATED PORT — פורטים שמעבירים תעבורה מול כל RP. 4 בחירת BLOCKING PORT — פורטים ועורקים שלא בשימוש נחסמים לוגית (לא מנתקים פיזית). 5 עדכון — ה-ROOT BRIDGE מפיץ הודעות ומעדכן את הטופולוגיה בשינויים.",["בחירת ה-Root Bridge","בחירת ה-Blocking Ports","בחירת ה-Designated Ports","חסימה פיזית של כבלים"],{mq:"מהו השלב הראשון בפרוטוקול STP?",v:[["מהו ערך ה-PRIORITY ברירת המחדל של מתג ב-STP?",["32768","0","65535","4096"]],["מה קורה לפורט במצב BLOCKING ב-STP?",["הוא נחסם לוגית (תוכנתית) והכבל נשאר מחובר","הכבל מנותק פיזית","הוא הופך ל-Root Port","הוא מעביר רק Broadcast"]]]}],
+["c9",55,"אם יש שני מתגים עם אותו ערך PRIORITY, כיצד ייבחר ה-ROOT BRIDGE?","ייבחר המתג בעל כתובת ה-MAC הנמוכה ביותר.",["המתג בעל כתובת ה-MAC הנמוכה ביותר","המתג בעל כתובת ה-MAC הגבוהה ביותר","המתג שהודלק ראשון","המתג עם הכי הרבה פורטים"]],
+["c10",56,"מהו תהליך הניתוב?","תהליך של בחירת הדרך הטובה ביותר (לפי מדדים שנקבעו) לשליחת חבילת מידע ברשת.",["בחירת הדרך הטובה ביותר לשליחת חבילה בין רשתות","למידת כתובות MAC","חלוקת כתובות IP","חסימת לולאות ברשת"]],
+["c10",57,"בעזרת מה יתבצע תהליך הניתוב?","בעזרת הנתב.",["נתב","מתג רמה 2","רכזת (Hub)","RIT"]],
+["c10",58,"מהם הממשקים הקיימים בנתב?","לפי החוברת: ממשק ה-CONSOLE, שדרכו הטכנאי מתחבר מקומית כדי להגדיר הגדרות, וממשק ה-AUXILIARY.",["Console ו-Auxiliary (AUX)","PS/2 ו-USB","VGA ו-HDMI","SATA ו-SAS"],{mq:"אילו שני ממשקי ניהול מוזכרים בחומר בנתב?",n:"בחוברת כתוב שממשק ה-AUX משמש להעתקת הגדרות מנתב לנתב. בפועל AUX משמש בעיקר לגישה מרחוק דרך מודם (ניהול מחוץ לרשת). בנוסף לממשקי הניהול יש לנתב ממשקי רשת (Ethernet, Serial) שדרכם עוברת התעבורה."}],
+["c10",59,"מה הבעיה שפותר מתג רמה 3? ממה היא נובעת? איך הוא פותר אותה?","הבעיה: צוואר בקבוק בנתב — הנתב מנתב ואז ממתג אחרי מציאת ה-MAC המתאים ל-IP, וזה לוקח זמן ומוריד את קצב התעבורה (Delay). הפתרון: מתג רמה 3 מהיר יותר, ממתג בחומרה לפי MAC (טבלת CAM), ובנוסף מסוגל לנתב בין VLANים (משנה את שדה ה-Tagging) ומפריד מרחבי Broadcast כמו נתב.",["צוואר בקבוק בנתב; מתג רמה 3 ממתג בחומרה ומנתב בין VLANים מהר יותר","התנגשויות ב-Half Duplex; מתג רמה 3 מוסיף Collision Domains","מחסור בכתובות IP; מתג רמה 3 מחלק כתובות","לולאות ברשת; מתג רמה 3 מחליף את STP"]],
+["c10",60,"מהם שלושת סוגי הניתוב?","ניתוב סטטי — מוגדר ידנית ע״י מנהל הרשת ואינו משתנה עם שינויי טופולוגיה. ניתוב דינמי — נלמד ע״י פרוטוקול ניתוב, מתעדכן מחזורית או בשינוי טופולוגיה. ניתוב ברירת מחדל — לאן לשלוח חבילה שיעדה לא בטבלת הניתוב, בדרך כלל לרשת גדולה יותר.",["סטטי, דינמי וברירת מחדל","Unicast, Multicast ו-Broadcast","Access, Trunk ו-EtherChannel","RIP, OSPF ו-ARP"],{v:[["איזה סוג ניתוב קובע לאן תישלח חבילה שכתובת היעד שלה אינה מופיעה בטבלת הניתוב?",["ניתוב ברירת מחדל","ניתוב סטטי","ניתוב דינמי","ניתוב Broadcast"]]]}],
+["c10",61,"מהן שתי המשפחות בפרוטוקולי ניתוב ומה ההבדל ביניהן?","Distance Vector — מדד האיכות הוא מרחק (Hop Count = מספר הנתבים בדרך); הנתבים שולחים לשכנים את טבלת הניתוב כל פרק זמן. Link State — המדד הוא עלות (Cost) לפי רוחב פס ועומס; אחרי הלמידה הראשונית נשלחים רק עדכוני שינויים; היררכי — מחולק לאזורים.",["Distance Vector — לפי מספר קפיצות (Hops); Link State — לפי עלות/רוחב פס ועדכונים רק בשינוי","Distance Vector — לפי רוחב פס; Link State — לפי מספר קפיצות","Distance Vector — לניתוב סטטי; Link State — לניתוב ברירת מחדל","Distance Vector — ברשתות קוויות; Link State — ברשתות אלחוטיות"]],
+["c10",62,"מהו פרוטוקול ICMP ואיפה משתמשים בו?","Internet Control Message Protocol — פרוטוקול בקרה לשליחת הודעות שגיאה ואבחון למנהלי רשת (למשל ping). פועל בשכבה השלישית, לצד IP.",["פרוטוקול בקרה להודעות שגיאה ואבחון (למשל ping), בשכבה 3","פרוטוקול לחלוקת כתובות IP","פרוטוקול להעברת קבצים","פרוטוקול להמרת שמות לכתובות"]],
+["c10",63,"מהו פרוטוקול ARP ומתי נשתמש בו?","פרוטוקול שמאפשר למצוא את כתובת ה-MAC שמתאימה לכתובת IP ידועה. נשתמש בו כשאנחנו יודעים את ה-IP של היעד וצריכים את ה-MAC כדי לבנות את המסגרת.",["למצוא כתובת MAC לפי כתובת IP ידועה","למצוא כתובת IP לפי שם אתר","לקבל כתובת IP משרת","לבדוק קישוריות ברשת"],{n:"בחוברת כתוב ש-ARP עובד בשכבת התעבורה — זו טעות. ARP פועל בין שכבה 2 לשכבה 3 (מתרגם כתובת שכבה 3 לכתובת שכבה 2), ואינו קשור לשכבת התעבורה."}],
+["c10",64,"הסבר ופרט על LOCAL ARP ועל REMOTE ARP.","Local ARP — כשהיעד באותה רשת: המקור שולח ARP Request ב-Broadcast (יעד FF-FF-FF-FF-FF-FF) עם כתובת ה-IP המבוקשת; תחנת היעד מחזירה ARP Reply ישירות עם ה-MAC שלה. Remote ARP — כשהיעד ברשת אחרת: הנתב מפריד מרחבי Broadcast, לכן התחנה שולחת ARP Request לכתובת ה-Default Gateway, לומדת את ה-MAC של הנתב ושולחת אליו; הנתב מנתב לרשת היעד ושם מבצע Local ARP כדי למצוא את ה-MAC של תחנת היעד.",["התחנה מבקשת את כתובת ה-MAC של ה-Default Gateway (הנתב) ושולחת אליו","התחנה שולחת Broadcast שעובר דרך הנתב לרשת היעד","התחנה שולחת ישירות ל-MAC של תחנת היעד","התחנה פונה לשרת DNS"],{mq:"ב-Remote ARP (היעד ברשת אחרת), את כתובת ה-MAC של מי מבקשת תחנת המקור?",v:[["לאיזו כתובת MAC נשלח ARP Request?",["FF-FF-FF-FF-FF-FF (Broadcast)","הכתובת של תחנת היעד","00-00-00-00-00-00","הכתובת של שרת ה-DHCP"]]]}],
+["c10",65,"כיצד נבדיל פיזית בין מתג רמה 2 למתג רמה 3?","מתג רמה 2: בפאנל הקדמי 24/48 פורטי RJ-45 ב-10/100Mbps לתחנות, ועוד 4 פורטים של 1G — 2 SFP ו-2 RJ-45. מתג רמה 3: 24/48 פורטי RJ-45 ב-10/100/1000Mbps ועוד 4 ממשקי SFP, ובנוסף הוא מודולרי. בגב שניהם: ספק כוח ראשי, ספק חלופי וחיבור קונסול.",["למתג רמה 3 פורטים ב-10/100/1000Mbps ו-4 ממשקי SFP, והוא מודולרי","למתג רמה 3 אין פורט קונסול","למתג רמה 2 יש רק סיבים","מתג רמה 3 תמיד גדול פי שניים"]],
+["c11",66,"מהו ה-THREE WAY HANDSHAKE?","שיטה אמינה להקמת חיבור ב-TCP בשלוש הודעות: SYN מהצד הפותח, SYN-ACK מהצד השני, ו-ACK לאישור. לפי החוברת: אחרי שידור, הצד השולח מחכה לאישור ACK ומשדר שוב אם לא התקבל, והצדדים מסכמים כמה מידע יישלח לפני אישור.",["SYN, אחריו SYN-ACK ואז ACK","ACK, אחריו SYN ואז FIN","Discover, אחריו Offer ואז Request","Request, אחריו Reply ואז Acknowledge"],{mq:"מהו הרצף הנכון של ה-Three Way Handshake ב-TCP?",n:"בחוברת ה-Three Way Handshake מתואר כמנגנון אישורים כללי. ההגדרה המקובלת היא שלוש הודעות להקמת חיבור: SYN, SYN-ACK, ACK. טוב להכיר את שתיהן."}],
+["c11",67,"מה ההבדל בין TCP ל-UDP ואיפה הם מיושמים?","TCP — אמין, מבוסס חיבור (Connection Oriented): מחלק לסגמנטים וממספר אותם כדי שיגיעו בסדר הנכון, משתמש ב-Three Way Handshake, באישורים ובשידור חוזר. UDP — ללא חיבור ולא אמין: אין אישורים, תיקון שגיאות או שידור חוזר, ולכן מהיר יותר; משמש לקול ווידאו (VoIP). שניהם בשכבת התעבורה.",["TCP אמין ומבוסס חיבור; UDP ללא חיבור ומהיר — שניהם בשכבת התעבורה","TCP מהיר ולא אמין; UDP אמין — שניהם בשכבת הרשת","TCP לקול ווידאו; UDP להעברת קבצים","TCP בשכבה 2; UDP בשכבה 3"],{v:[["באיזה פרוטוקול נעדיף להשתמש להעברת שיחת קול (VoIP), ומדוע?",["UDP — כי הוא מהיר ואין בו המתנה לאישורים","TCP — כי הוא אמין ומשדר מחדש","ICMP — כי הוא פרוטוקול בקרה","ARP — כי הוא מוצא כתובות"]]]}],
+["c11",68,"מהו פרוטוקול SMTP?","Simple Mail Transfer Protocol — פרוטוקול לשליחת דוא״ל. ההודעה נקלטת בשרת SMTP, נכנסת לתור ומועברת ליעד כשמגיע תורה. SMTP משמש לשליחה; לקבלה משתמשים ב-POP3.",["פרוטוקול לשליחת דוא״ל; לקבלה משתמשים ב-POP3","פרוטוקול לקבלת דוא״ל בלבד","פרוטוקול להעברת קבצים","פרוטוקול לניהול רשת"]],
+["c11",69,"מה ההבדל בין FTP ל-TFTP?","שניהם להעברת קבצים. FTP — אמין (Reliable), מאפשר פעולות על קבצים ותיקיות (העברה, שינוי שמות וכו׳). TFTP — פשוט ולא אמין (Unreliable): אין אישורים ואין שידורים חוזרים, ואין ״ממשק״ — כדי לגשת לקובץ צריך לדעת בדיוק את הנתיב והשם.",["FTP אמין ומאפשר ניהול קבצים ותיקיות; TFTP פשוט, לא אמין ודורש נתיב ושם מדויקים","FTP לא אמין; TFTP אמין","FTP לשליחת דוא״ל; TFTP לקבלת דוא״ל","FTP להמרת שמות; TFTP להעברת קבצים"],{n:"בחוברת כתוב ש-FTP ״בעל ממשק גרפי״. FTP עצמו הוא פרוטוקול; יש לו תוכנות לקוח גרפיות. ההבדל המקצועי: FTP עובד מעל TCP (פורטים 20/21) עם הזדהות, ו-TFTP מעל UDP (פורט 69) בלי הזדהות."}],
+["c11",70,"מהו פרוטוקול DNS?","Domain Name System — ממיר שמות דומיין לכתובות IP ולהפך. התקני הרשת לא מכירים שמות של אתרים, ולכן צריך להמיר אותם לכתובות IP.",["ממיר שמות דומיין לכתובות IP ולהפך","מחלק כתובות IP לתחנות","מוצא כתובת MAC לפי IP","מצפין את תעבורת האינטרנט"]],
+["c11",71,"מה ההבדל בין HTTP ל-HTTPS?","HTTP — פרוטוקול לא מאובטח שבאמצעותו הדפדפן מתקשר עם השרת ומעביר את דפי האינטרנט. HTTPS — אינו פרוטוקול נפרד אלא HTTP עם תוספת יכולות אבטחה (הצפנה).",["HTTPS הוא HTTP עם תוספת אבטחה (הצפנה)","HTTPS מהיר יותר כי אינו מצפין","HTTP משמש לדוא״ל ו-HTTPS לאתרים","HTTPS עובד רק ברשתות פנימיות"]],
+["c11",72,"מהו פרוטוקול DHCP ומהן שיטות חלוקת הכתובות ב-DHCP?","Dynamic Host Configuration Protocol — אחראי על חלוקה דינמית של כתובות IP ברשת. שיטות: ידנית — מנהל הרשת מגדיר כתובת לכל התקן; אוטומטית — מגדירים לשרת תחום כתובות; דינמית — כמו אוטומטית, אך עם הגבלת זמן.",["ידנית, אוטומטית ודינמית (עם הגבלת זמן)","סטטית, דינמית וברירת מחדל","Unicast, Multicast ו-Broadcast","Discover, Offer ו-Request"],{mq:"מהן שלוש שיטות חלוקת הכתובות ב-DHCP?"}],
+["c11",73,"מהו שרת?","מחשב (לרוב חזק ממחשב ביתי) שמספק שירותים ללקוחות — מחשבים או תוכנות שמבקשים את שירותיו. גם תוכנה שמספקת שירותים לתוכנות לקוח נקראת שרת.",["מחשב או תוכנה שמספקים שירותים ללקוחות","כל מחשב שמחובר לאינטרנט","מתג רמה 3","מחשב נייד של מנהל הרשת"]],
+["c11",74,"מהו FIREWALL?","חומת אש — מערכת תוכנתית או חומרתית לאבטחה ולמידור הרשת: חומה בין הרשת לאינטרנט שמונעת תקשורת לא רצויה וחדירה זדונית, ומפרידה סגמנטים.",["מערכת תוכנה או חומרה שמונעת תקשורת לא רצויה וממדרת את הרשת","פרוטוקול לחלוקת כתובות","סוג של כבל מוגן מאש","שרת לגיבוי קבצים"]],
+["c11",75,"מה יכול להוות רכיבי קצה?","כל דבר שנמצא בקצה רשת התקשורת ונותן שירות למשתמשים: מחשבים, מדפסות, טלפונים, סורקים, מצלמות VC, עמדות קרן אור.",["מחשבים, מדפסות, טלפונים וסורקים","מתגים ונתבים בלבד","כבלים ומחברים","שרתי DNS ו-DHCP בלבד"]]
+);
+
+// פרק Packet Tracer — 21 שאלות. cli:1 מסמן שאלת פקודות (תשובה פתוחה בכתב LTR)
+B.push(
+["p1",1,"מהי ארכיטקטורה פיזית ולוגית, ומה ההבדל ביניהן?","ארכיטקטורה פיזית — צורת החיבור בפועל בשטח: איזה מתג מתחבר לאן ובאילו כבלים. ארכיטקטורה לוגית — צורת החיבור הווירטואלית, שנבנית מההגדרות על כל ציוד. דוגמה: ב-STP פורט נחסם לוגית, אך פיזית הכבל עדיין מחובר.",["פיזית — החיבורים והכבלים בפועל; לוגית — הרשת כפי שנבנית מההגדרות (למשל פורט חסום ב-STP)","פיזית — לפי כתובות IP; לוגית — לפי כבלים","פיזית — ב-Packet Tracer; לוגית — בשטח","אין הבדל ביניהן"]],
+["p1",2,"מהם שלושת סוגי ההתחברות למתג?","חיבור מקומי — כבל CONSOLE מחובר פיזית למתג. חיבור מרוחק TELNET — דרך הרשת, לא מוצפן ולכן פחות מאובטח. חיבור מרוחק SSH — דומה ל-Telnet, אך המידע מוצפן ומאובטח.",["Console (מקומי), Telnet (מרוחק, לא מוצפן), SSH (מרוחק, מוצפן)","USB, HDMI ו-VGA","Console, FTP ו-DNS","Telnet, SSH ו-HTTP בלבד"],{v:[["מה ההבדל העיקרי בין Telnet ל-SSH?",["SSH מצפין את המידע; Telnet שולח אותו גלוי","Telnet מצפין; SSH לא","Telnet מקומי ו-SSH מרוחק","SSH עובד רק דרך כבל קונסול"]]]}],
+["p1",3,"מהן ארבע רמות הגישה, ומה תפקידה של כל אחת?","User (Sw>) — צפייה מצומצמת בלי אפשרות לשנות; לשם נכנסים מיד אחרי ההתחברות. Privileged (Sw#) — שינויים מינימליים, בעיקר פקודות SHOW. Global Configuration (Sw(config)#) — שינויים שמשפיעים על כל הציוד: ממשקים, פרוטוקולים ותהליכים. Interface Configuration (Sw(config-if)#) — תת־רמה להגדרת ממשק ספציפי, למשל speed 100 על Fa0/5.",["Global Configuration — Sw(config)#","User — Sw>","Privileged — Sw#","Interface Configuration — Sw(config-if)#"],{mq:"באיזו רמת גישה מגדירים פרוטוקול או הגדרה שמשפיעים על כל המתג (למשל hostname)?",v:[["מהי רמת הגישה שבה נמצאים מיד אחרי ההתחברות למתג?",["User — Sw>","Privileged — Sw#","Global Configuration — Sw(config)#","Interface Configuration — Sw(config-if)#"]],["איזו פקודה מעבירה מרמת User לרמת Privileged?",["enable","configure terminal","login","exit"]]]}],
+["p2",4,"הגדר שם למתג (למשל MEFAKED).","Sw>enable\nSw#configure terminal\nSw(config)#hostname MEFAKED",["enable\nconfigure terminal\nhostname MEFAKED","enable\nhostname MEFAKED","configure terminal\nname MEFAKED","enable\nconfigure terminal\nset name MEFAKED"],{cli:1,mq:"איזה רצף פקודות מגדיר את שם המתג ל-MEFAKED?"}],
+["p2",5,"הגדר תיאור ״AVNET״ לפורט FASTETHERNET 0/5.","Sw>enable\nSw#configure terminal\nSw(config)#interface fastethernet 0/5\nSw(config-if)#description AVNET",["interface fastethernet 0/5\ndescription AVNET","interface fastethernet 0/5\nname AVNET","description fastethernet 0/5 AVNET","interface fastethernet 0/5\nbanner motd AVNET"],{cli:1,mq:"אחרי configure terminal — איזה רצף מגדיר תיאור AVNET לפורט Fa0/5?"}],
+["p2",6,"הגדר הודעה ״קופצת״ למתג: METEG SHEL 1233.","Sw(config)#banner motd #METEG SHEL 1233#\nהתו שבתחילת ההודעה ובסופה הוא תו תוחם. בחוברת משתמשים ב-< >.",["banner motd #METEG SHEL 1233#","description METEG SHEL 1233","hostname METEG SHEL 1233","motd banner METEG SHEL 1233"],{cli:1,mq:"איזו פקודה (ברמת config) מגדירה הודעת פתיחה METEG SHEL 1233?"}],
+["p2",7,"מהם שני סוגי הסיסמאות שניתן להגדיר על מתג? הגדר כל אחת מהן.","PASSWORD — סיסמה רגילה (לא מוצפנת): Sw(config)#enable password 12345. SECRET — סיסמה מוצפנת: Sw(config)#enable secret 12345. אם מוגדרות שתיהן, המתג משתמש בסיסמת ה-SECRET.",["המתג משתמש בסיסמת ה-secret","המתג משתמש בסיסמת ה-password","המתג דורש להקליד את שתיהן","המתג ננעל עד איפוס"],{mq:"אם הוגדרו במתג גם enable password וגם enable secret — באיזו סיסמה ישתמש המתג?",v:[["מה ההבדל בין enable password ל-enable secret?",["secret נשמרת מוצפנת; password נשמרת גלויה","password מוצפנת; secret גלויה","secret לחיבור מרחוק בלבד; password לקונסול","אין הבדל"]]]}],
+["p2",8,"הצפן סיסמה מסוג PASSWORD.","Sw(config)#enable password 123456\nSw(config)#service password-encryption",["service password-encryption","enable secret encryption","password encrypt all","crypto key generate rsa"],{cli:1,mq:"איזו פקודה מצפינה סיסמאות מסוג password שמופיעות בהגדרות?"}],
+["p2",9,"הגדר התחברות מקומית למתג והתחברות מרחוק.","מקומית:\nSw(config)#line console 0\nSw(config-line)#password 123456\nSw(config-line)#login\nמרחוק:\nSw(config)#line vty 0 4\nSw(config-line)#password 123456\nSw(config-line)#login",["line vty 0 4\npassword 123456\nlogin","line console 0\npassword 123456\nlogin","interface vty 0 4\nenable password 123456","line remote\npassword 123456"],{cli:1,mq:"איזה רצף מגדיר סיסמה להתחברות מרחוק (Telnet) למתג?",v:[["איזה רצף מגדיר סיסמה להתחברות מקומית דרך כבל הקונסול?",["line console 0\npassword 123456\nlogin","line vty 0 4\npassword 123456\nlogin","interface console\npassword 123456","enable console 123456"]]]}],
+["p2",10,"כיצד אשמור את השינויים שבוצעו על המתג? בצע בשתי דרכים.","מעתיקים את ה-running-config ל-startup-config, ברמת Privileged (Sw#):\nדרך 1: Sw#copy running-config startup-config\nדרך 2: Sw#write",["copy running-config startup-config","copy startup-config running-config","save running-config","show running-config"],{cli:1,mq:"איזו פקודה שומרת את ההגדרות כך שיישארו אחרי כיבוי?",n:"בחוברת מופיעה הפקודה אחרי configure terminal. בפועל מריצים אותה ברמת Sw# (ומתוך מצב config אפשר להקדים את המילה do, למשל do write)."}],
+["p3",11,"הצג את ההגדרות שנטענות למתג בעת הפעלתו.","Sw#show startup-config",["show startup-config","show running-config","show ip interface brief","show vlan brief"],{cli:1,mq:"איזו פקודה מציגה את ההגדרות שנטענות בהדלקת המתג?"}],
+["p3",12,"הצג את ההגדרות שנמצאות כרגע על המתג.","Sw#show running-config",["show running-config","show startup-config","show version","show mac-address-table"],{cli:1,mq:"איזו פקודה מציגה את ההגדרות הפעילות כרגע במתג?"}],
+["p3",13,"הצג את המידע אודות ממשקי ה-IP של הנתב.","Router#show ip interface brief",["show ip interface brief","show ip route","show interfaces vlan","show running-config ip"],{cli:1,mq:"איזו פקודה מציגה תקציר של ממשקי הנתב, כתובות ה-IP שלהם ומצבם?"}],
+["p3",14,"הצג את ה-VLANים שהוגדרו על המתג.","Sw#show vlan brief",["show vlan brief","show interfaces trunk","show ip interface brief","show vlan voice"],{cli:1,mq:"איזו פקודה מציגה את רשימת ה-VLANים במתג והפורטים המשויכים להם?"}],
+["p3",15,"הצג את טבלת ה-MAC.","Sw#show mac-address-table\nבגרסאות חדשות: show mac address-table",["show mac-address-table","show arp","show ip route","show cdp neighbors"],{cli:1,mq:"איזו פקודה מציגה את טבלת כתובות ה-MAC (CAM) של המתג?"}],
+["p4",16,"שייך כמה חיבורים פיזיים בין שני מתגים לקו לוגי אחד.","Sw(config)#interface range fastethernet 0/1-5\nSw(config-if-range)#channel-group 3 mode on\nאת אותן פעולות מבצעים גם במתג השני, עם אותו מספר קבוצה. טכנולוגיה זו נקראת EtherChannel.",["interface range fastethernet 0/1-5\nchannel-group 3 mode on","interface range fastethernet 0/1-5\nswitchport mode trunk","interface fastethernet 0/1\nchannel 1-5","spanning-tree group 3"],{cli:1,mq:"איזה רצף מאחד את הפורטים Fa0/1–5 לקו לוגי אחד (EtherChannel)?",v:[["כשמגדירים EtherChannel בין שני מתגים, מה צריך לעשות במתג השני?",["אותן פעולות, עם אותו מספר קבוצה","שום דבר — מספיק להגדיר בצד אחד","להגדיר שם VLAN זהה בלבד","לכבות את STP"]]]}],
+["p4",17,"צור VLAN בשם ״TARGIL״ ושייך אותו לפורט במתג.","Sw(config)#vlan 5\nSw(config-vlan)#name TARGIL\nSw(config-vlan)#exit\nSw(config)#interface fastethernet 0/5\nSw(config-if)#switchport mode access\nSw(config-if)#switchport access vlan 5",["vlan 5\nname TARGIL\ninterface fastethernet 0/5\nswitchport mode access\nswitchport access vlan 5","vlan TARGIL 5\ninterface fastethernet 0/5\nswitchport vlan 5","vlan 5\ndescription TARGIL\ninterface fastethernet 0/5\nswitchport mode trunk","interface vlan 5\nname TARGIL\nswitchport access vlan 5"],{cli:1,mq:"איזה רצף יוצר VLAN 5 בשם TARGIL ומשייך אליו את Fa0/5?"}],
+["p4",18,"הדלק, הגדר מהירות 100Mb ותצורת עבודה FULL-DUPLEX על פורטים 1–6.","Sw(config)#interface range fastethernet 0/1-6\nSw(config-if-range)#no shutdown\nSw(config-if-range)#speed 100\nSw(config-if-range)#duplex full",["interface range fastethernet 0/1-6\nno shutdown\nspeed 100\nduplex full","interface fastethernet 0/1-6\nenable\nspeed 100 full","interface range fastethernet 0/1-6\nshutdown\nspeed 100\nduplex half","interface range fastethernet 0/1-6\nbandwidth 100\nfull-duplex on"],{cli:1,mq:"איזה רצף מדליק את Fa0/1–6, קובע מהירות 100 ו-Full Duplex?"}],
+["p4",19,"צור VOICE VLAN ושייך אותו לפורט במתג.","Sw(config)#vlan 310\nSw(config-vlan)#name VoiceVlan\nSw(config-vlan)#exit\nSw(config)#interface fastethernet 0/5\nSw(config-if)#switchport mode access\nSw(config-if)#switchport voice vlan 310",["switchport voice vlan 310","switchport access vlan 310","switchport mode voice 310","voice-vlan enable 310"],{cli:1,mq:"בתוך ממשק הפורט — איזו פקודה משייכת את Voice VLAN 310?"}],
+["p4",20,"צור ממשק וירטואלי לצורך חיבור מרחוק דרך פורט 6 במתג.","Sw(config)#vlan 199\nSw(config-vlan)#exit\nSw(config)#interface vlan 199\nSw(config-if)#ip address 180.21.199.44 255.255.0.0\nSw(config-if)#no shutdown\nSw(config-if)#exit\nSw(config)#interface fastethernet 0/6\nSw(config-if)#switchport mode access\nSw(config-if)#switchport access vlan 199\nהכתובת היא דוגמה. בחוברת הפורט בדוגמה הוא 0/21.",["interface vlan 199\nip address 180.21.199.44 255.255.0.0\nno shutdown","interface fastethernet 0/6\nip address 180.21.199.44 255.255.0.0","vlan 199\nip default-gateway 180.21.199.44","line vty 199\nip address 180.21.199.44"],{cli:1,mq:"איזה רצף יוצר ממשק וירטואלי (SVI) עם כתובת IP לניהול מרחוק של המתג?",n:"כדי שהחיבור מרחוק יעבוד בפועל צריך גם סיסמה על line vty 0 4 (שאלה 9)."}],
+["p4",21,"הגדר כתובת DEFAULT GATEWAY על פורט 4 בנתב.","Router(config)#interface gigabitethernet 0/4\nRouter(config-if)#ip address 180.21.67.4 255.255.0.0\nRouter(config-if)#no shutdown\nכתובת זו של ממשק הנתב משמשת כ-Default Gateway של המחשבים ברשת. בחוברת הדוגמה היא על ממשק 0/5.",["interface gigabitethernet 0/4\nip address 180.21.67.4 255.255.0.0\nno shutdown","interface gigabitethernet 0/4\ndefault-gateway 180.21.67.4","ip route 0.0.0.0 gigabitethernet 0/4","interface gigabitethernet 0/4\nswitchport access vlan 4"],{cli:1,mq:"איזה רצף מגדיר על ממשק 0/4 בנתב כתובת שתשמש כ-Default Gateway לרשת?",n:"ב-Router> הפקודה configure terminal לא תעבוד — קודם enable. ובמתג (לא בנתב) מגדירים שער ברירת מחדל עם ip default-gateway."}]
+);
+
+// פרק תקשורת IT — 37 שאלות
+B.push(
+["t1",1,"מהו צב״ד מסוג LINK RUNNER?","צב״ד (ציוד בדיקה) ייעודי לניטור ומדידה: מדידה — בדיקת תקינות תוך כדי הפעלה שוטפת של ציוד התקשורת; ניטור — איסוף ורישום נתונים כדי לעקוב אחרי התקינות והרציפות של הרשת.",["ציוד בדיקה ייעודי לניטור ומדידה של תקינות הרשת","מתג רמה 3 נייד","תוכנה לניהול תקלות","כבל קונסול מיוחד"]],
+["t1",2,"כיצד נבדוק מידע על המתג שאליו מתחברת נקודה שקופה בעזרת הצב״ד?","מחברים כבל RJ-45 מהחלק העליון של המכשיר לנקודה, בוחרים Switch ואז Select. במסך יתקבל מידע על המתג הקרוב — לרוב מיד, לפעמים עד כ-2 דקות, לפי הפרוטוקולים שמוגדרים במתג.",["מחברים RJ-45 לנקודה, בוחרים Switch ואז Select","מתחברים לקונסול המתג ומקלידים show version","מחברים את הצלצלן לנקודה ומאזינים לצליל","מבצעים ping לכתובת ה-Default Gateway"]],
+["t1",3,"מהו פרוטוקול CDP? מה נעשה אם נרצה מידע על המתג ו-CDP לא מותקן עליו?","CDP — פרוטוקול קנייני של Cisco לגילוי שכנים ישירים, בשכבה 2; מעביר באופן מרוכז מידע על הציודים שהוא פועל עליהם. אם CDP לא מוגדר, בתפריט ה-Switch לא נראה כלום, ונצטרך להיכנס לתפריט Auto Test כדי למצוא את המידע.",["פרוטוקול של Cisco לגילוי שכנים ישירים; בלעדיו נשתמש בתפריט Auto Test","פרוטוקול לחלוקת כתובות; בלעדיו נגדיר IP ידנית","פרוטוקול הצפנה; בלעדיו נשתמש ב-SSH","פרוטוקול ניתוב; בלעדיו נגדיר ניתוב סטטי"],{v:[["באיזו שכבה פועל CDP?",["שכבה 2 — עורק","שכבה 3 — רשת","שכבה 4 — תעבורה","שכבה 7 — יישום"]]]}],
+["t1",4,"מה ניתן לראות בתפריט ה-SWITCH בצב״ד?","סוג ושם המתג, כתובת ה-IP שלו, מספר הפורט שאליו מתחברים, מהירות ודופלקס, סוג החיבור (נחושת/סיב), ושיוך ה-VLAN.",["שם וסוג המתג, IP, מספר הפורט, מהירות ודופלקס ושיוך VLAN","רק את כתובת ה-MAC של המחשב","את רשימת המשתמשים בדומיין","את טבלת הניתוב של הנתב"]],
+["t1",5,"אילו 3 דרכים יש לבדיקת כבל? פרט.","א. בדיקת כבל שאינו מחובר לכלום: מחברים RJ-45 בראש המכשיר ונכנסים ל-Cable Test (הבדיקה מתבצעת רק כשהקצה השני לא מחובר). ב. Wiremap — לכבלי נחושת בלבד: מחברים קצה אחד בראש המכשיר ואת הקצה השני בצד המכשיר (סגירת מעגל), ובודקים ב-Cable Test. ג. בדיקה עם הצלצלן — לבדיקת התאמה בין נקודה שקופה לנקודה ב-RIT.",["Cable Test לכבל לא מחובר, Wiremap, ובדיקה עם הצלצלן","Ping, Tracert ו-Ipconfig","בדיקה ויזואלית, מדידת אורך ושקילה","Show cdp, Show vlan ו-Show run"],{v:[["איזו בדיקת כבל אפשרית רק בכבל נחושת, כששני קצותיו מחוברים לצב״ד?",["Wiremap","Cable Test לכבל לא מחובר","בדיקת צלצלן","Auto Test"]]]}],
+["t1",6,"מהו צלצלן? כיצד נשתמש בו ולאיזו מטרה?","רכיב שבודק התאמה בין נקודה שקופה (בקיר) לנקודה ב-RIT. מחברים את הצב״ד עם RJ-45 לנקודה השקופה, ועוברים עם הצלצלן על פורטי ה-RIT; בכל מעבר לוחצים Cable Test ובודקים אם יש קישור.",["רכיב שמוצא איזה פורט ב-RIT מתאים לנקודה שקופה מסוימת","רכיב שמשמיע התראה כשהמתג נופל","מכשיר לבדיקת מתח בשקע","תוכנה לניהול שיחות טלפון"]],
+["t2",7,"מה נרשם בספר/בתוכנת הכלים בעת לקיחת ציוד?","איזה מכשיר נלקח (לפי מספר מקוטלג), מי לקח אותו (שם הטכנאי), ולשם איזו תקלה. בנוסף נרשמות בתוכנה/בספר 5 חתימות ביום על תקינות והימצאות כל הציוד בארון, למעט ציוד שמופיע כמושאל.",["איזה מכשיר (מספר מקוטלג), מי לקח, ולאיזו תקלה","רק שם הטכנאי","כתובת ה-IP של הציוד","מחיר הציוד ותאריך הרכישה"]],
+["t2",8,"מהם 6 כללי הבטיחות בעבודה עם ארון ציוד?","1 אין להתקרב לארון התקשורת עם אוכל ושתייה. 2 אין לגעת בארון בידיים רטובות וברגליים חשופות. 3 אין להוציא מחברים שחוברו לפני שהגענו. 4 שומרים על כיפוף עדין של הכבל. 5 התחברות זהירה לציודים. 6 זהירות מיוחדת במקומות שאינם נראים לעין.",["אין לנתק מחברים שחוברו לפני שהגענו","מותר לשתות ליד הארון אם הבקבוק סגור","יש לכופף כבלים בזווית חדה כדי לחסוך מקום","מותר לעבוד יחפים כדי למנוע חשמל סטטי"],{mq:"איזה מהבאים הוא כלל בטיחות בעבודה עם ארון תקשורת?"}],
+["t2",9,"מהי שיטת Patch Panel?","שיטת הסידור והתכנון של ארון התקשורת — כדי שנוכל לעבוד איתו בצורה הטובה והמסודרת ביותר.",["שיטת הסידור והתכנון של ארון התקשורת","שיטה לחלוקת כתובות IP","שיטה להצפנת טלפונים","שיטה לגיבוי שרתים"]],
+["t2",10,"מהו RIT? מהו ODF?","RIT — פאנל מחברים של כבלי נחושת (RJ-45). ODF — פאנל מחברים של סיבים אופטיים.",["RIT — פאנל נחושת (RJ-45); ODF — פאנל סיבים אופטיים","RIT — פאנל סיבים; ODF — פאנל נחושת","RIT — מתג ראשי; ODF — מתג גיבוי","RIT — שרת; ODF — נתב"]],
+["t2",11,"מהם 6 הנהלים למידור וסידור ארון תקשורת (על פי הסדר)?","1 עדכון המשתמשים המחוברים לארון שהשירות יושבת או יוגבל בזמן העבודה. 2 עבודה לפי מדרג (סיבים לפני RJ-45) לכל אורך העבודה. 3 מיפוי מלא ומפורט של הארון. 4 ניתוק לפי כללי הבטיחות. 5 בדיקת ההגדרות ותקינות המתג וכל הפורטים. 6 חיבור כל הקווים לפי הנהלים.",["עדכון המשתמשים שהשירות יושבת או יוגבל","ניתוק כל הכבלים","מיפוי מלא של הארון","חיבור כל הקווים לפי הנהלים"],{mq:"מהו הנוהל הראשון בסידור ארון תקשורת?",v:[["לפי הנהלים, באיזה מדרג עובדים בארון התקשורת?",["סיבים קודם, ואחריהם RJ-45","RJ-45 קודם, ואחריהם סיבים","קודם ספקי הכוח, ואחריהם הכבלים","אין מדרג — עובדים לפי סדר הפורטים"]]]}],
+["t2",12,"מהם 7 הנהלים לסלילת מחברים בארון תקשורת?","1 כל מחבר עובר בפאנל ה״שערות״ שמתחתיו. 2 התאמה בין מיקום הנקודה ב-RIT לפורט במתג. 3 בדיקת שמישות הפורט והגדרותיו לפי הנדרש. 4 שימוש במחברים תקינים בלבד, באורך מתאים. 5 סלילת המחברים בצמוד לצידי הארון. 6 איזוק קבוצות מחברים יחד לחיסכון בנפח ולמניעת אי־סדר. 7 הדבקת שלפלפים בכל המקומות הנדרשים.",["סלילת המחברים בצמוד לצידי הארון ואיזוקם בקבוצות","מתיחת המחברים באלכסון במרכז הארון","שימוש בכבלים ארוכים ככל האפשר ליתר ביטחון","הסרת השלפלפים כדי למנוע בלבול"],{mq:"איזה מהבאים הוא נוהל נכון לסלילת מחברים בארון תקשורת?"}],
+["t2",13,"מהם שלפלפים? מה נרשם בכל שלפלף ואיפה נמקם אותם?","מדבקות לבנות ליצירת סדר בארון התקשורת. על כל שלפלף רושמים: לאיזו רשת הכבל שייך, לאן הוא מגיע (כתובת IP של הציוד), באיזה מתג ופורט, ומהי נקודת ה-RIT. ממקמים ב-4 מקומות: בצד הכבל המתחבר למתג, בצד המתחבר ל-RIT, בצד המתחבר לנקודת הרשת, ובצד המתחבר למחשב.",["4 מקומות: צד המתג, צד ה-RIT, צד נקודת הרשת וצד המחשב","מקום אחד: על דלת הארון","2 מקומות: על המתג ועל המחשב","רק על כבלי הסיבים"],{mq:"בכמה ובאילו מקומות ממקמים שלפלפים על כבל?"}],
+["t2",14,"כיצד מחממים נקודה?","חימום נקודה = הפיכת נקודת רשת לפעילה. 1 בדיקת קישוריות בנקודה; אם יש — מחברים את המכשיר. אם אין: 2 בדיקת צלצלן בין הנקודה השקופה למציאת הנקודה המקושרת ב-RIT. 3 בדיקת תקינות כבל RJ-45. 4 סלילה (לפי כללי הבטיחות והסלילה) בין נקודת ה-RIT לפורט במתג שהוגדר עבור הרכיב. 5 בדיקת קישוריות ותקינות החימום. 6 הדבקת שלפלפים.",["בודקים קישוריות, מוצאים את נקודת ה-RIT בצלצלן, ומחברים אותה בכבל תקין לפורט מוגדר במתג","מגדירים כתובת IP חדשה לנקודה","מחליפים את השקע בקיר","מפעילים את הנקודה דרך תוכנת מש״ל"],{mq:"מה המשמעות של ״חימום נקודה״ ואיך מבצעים אותו בעיקרון?"}],
+["t3",15,"מהם הפרוטוקולים Telnet ו-SSH ומה ההבדל ביניהם?","שניהם משמשים להתחברות מרחוק לרכיב רשת. Telnet — לא מוצפן. SSH — מאובטח ומוצפן.",["שניהם לגישה מרחוק; SSH מוצפן ו-Telnet לא","Telnet מוצפן ו-SSH לא","Telnet להעברת קבצים ו-SSH לדוא״ל","SSH לגישה מקומית בלבד"]],
+["t3",16,"מהי תוכנת מש״ל כחול?","התוכנה שבעזרתה הטכנאים מנהלים את התקלות. כשמתקבל דיווח על תקלה מזינים אותה מיד במערכת, כדי לעקוב אחרי התקלות ולשמור על סדר וארגון.",["תוכנה לניהול ומעקב אחר תקלות","תוכנה לניהול טלפוני ספיר","אנטי־וירוס ארגוני","תוכנה לשיחות וידאו"]],
+["t3",17,"כיצד נפתח תקלה במש״ל כחול?","חדש ← תקלה חדשה.",["חדש ← תקלה חדשה","קובץ ← שמירה","כלים ← אפשרויות","עזרה ← דיווח"]],
+["t4",18,"מהם שרתי CUCM, ומהו שירות CM?","CUCM (Cisco Unified Communications Manager) — השרת שרשת ״ספיר כחול״ מבוססת עליו. בכל שרת CUCM מלבד ה-Publisher רץ שירות Call Manager (CM) שמאפשר ניהול טלפוניית IP: הגדרות לטלפונים, טיפול בתקלות ובבקשות, הקמת שיחות ופונקציות ניהול.",["CUCM — שרתי הטלפוניה של רשת ספיר כחול; CM — השירות שמנהל את הטלפונים ומקים שיחות","CUCM — מתג ליבה; CM — פרוטוקול ניתוב","CUCM — אנטי־וירוס; CM — שרת ניהול שלו","CUCM — שרת דוא״ל; CM — שרת קבצים"]],
+["t4",19,"היכן נמצאים שרתי ה-CUCM בחיל?","יש 9 שרתי CM בכל החיל: 5 בקריה ו-4 בצריפין.",["9 שרתים: 5 בקריה ו-4 בצריפין","9 שרתים: 4 בקריה ו-5 בצריפין","5 שרתים, כולם בקריה","שרת אחד בכל בסיס"]],
+["t4",20,"מהו ה-PUBLISHER?","אחד מתשעת שרתי ה-CM, שתפקידו לבקר ולעדכן את כל שאר השרתים בכל שינוי ברשת ולוודא אחידות ביניהם. לכן בפועל 8 שרתי CM נמצאים בשימוש.",["השרת שמעדכן את כל שאר שרתי ה-CM ושומר על אחידות; לכן 8 בשימוש","השרת שמקים את כל השיחות","שרת הגיבוי שעולה רק כשכל השאר נופלים","שרת שמפרסם דפי אינטרנט"]],
+["t4",21,"מהם שני ה-VLANים הייעודיים לטלפוני ספיר?","Voice VLAN 310 ו-311.",["310 ו-311","199 ו-200","1 ו-2","100 ו-101"]],
+["t4",22,"מהו פרוטוקול VOIP?","Voice Over IP — טכנולוגיה להעברת קול על גבי רשתות IP. היתרון הגדול: חיסכון בפריסת תשתיות — אין צורך לפרוס קווי טלפון נפרדים, עובדים על רשת קיימת.",["העברת קול על גבי רשת IP, בלי צורך בקווי טלפון נפרדים","העברת קבצים בין שרתים","הצפנת תעבורת אינטרנט","חלוקת כתובות לטלפונים"]],
+["t4",23,"מהו פרוטוקול RTP?","Real Time Transport Protocol — להעברת אותות קול ווידאו בזמן אמת. לפי החוברת נמצא בשכבת היישום ופועל מעל UDP (שכבת התעבורה).",["פרוטוקול להעברת קול ווידאו בזמן אמת, מעל UDP","פרוטוקול איתות להקמת שיחות","פרוטוקול לניתוב בין רשתות","פרוטוקול להעברת קבצים אמינה מעל TCP"],{v:[["מעל איזה פרוטוקול תעבורה פועל RTP?",["UDP","TCP","ICMP","ARP"]]]}],
+["t4",24,"מהו פרוטוקול SIP?","Session Initiation Protocol — פרוטוקול איתות לשליטה וניהול של שיחות זמן אמת ברשתות IP. פועל בשכבת האפליקציה.",["פרוטוקול איתות לניהול שיחות זמן אמת ברשת IP","פרוטוקול להעברת השמע עצמו","פרוטוקול קנייני של Cisco לטלפונים","פרוטוקול לחלוקת כתובות IP"]],
+["t4",25,"מהו פרוטוקול SCCP?","Skinny Call Control Protocol — פרוטוקול ייחודי (קנייני) של Cisco לתקשורת בין שרתי הטלפוניה (CUCM/CM) לבין טלפוני VoIP (ספיר כחול).",["פרוטוקול קנייני של Cisco בין שרתי CUCM לטלפוני VoIP","פרוטוקול פתוח להעברת וידאו","פרוטוקול לגילוי שכנים","פרוטוקול להצפנת דוא״ל"]],
+["t4",26,"מהו תהליך ה-CERTIFICATE?","תהליך ההצפנה שהטלפון עובר לפני שימושו הראשון. אחרי קבלת ההגדרות ב-TFTP, הטלפון מקבל מה-CM מפתח הצפנה ייחודי; ה-CM מכיר את המפתחות של כל הטלפונים הרשומים אליו, ומידע ביניהם נשלח מוצפן. בסוף מוגדרים שפה, נראות, רישום ל-CM והצפנה. מתבצע במתג ייעודי של מחלקת אבנט בקריה.",["תהליך ההצפנה שהטלפון עובר לפני שימוש ראשון — קבלת מפתח הצפנה ייחודי מה-CM","תהליך חידוש כתובת ה-IP של הטלפון","תהליך רישום המשתמש לתוכנת ג׳אבר","בדיקת תקינות הכבל של הטלפון"]],
+["t5",27,"כיצד נבצע שרשור?","שרשור = חיבור מחשב וטלפון ספיר על נקודת רשת אחת (חיסכון בפורטים). 1 כבל RJ-45 מהנקודה השקופה לפורט הייעודי בגב הספיר (מסומן SW או ציור מתג). 2 כבל RJ-45 מהמחשב לפורט הייעודי בגב הספיר (מסומן PC). 3 אם המתג תומך PoE — זה מספיק; אחרת מחברים שנאי לספיר. 4 מוודאים שהפורט במתג מוגדר עם VLAN (למחשב) ו-Voice VLAN.",["כבל מהנקודה לפורט SW בטלפון, וכבל מפורט PC בטלפון למחשב","כבל מהנקודה למחשב, וכבל מהמחשב לטלפון","שני כבלים מהנקודה — אחד לטלפון ואחד למחשב","חיבור הטלפון והמחשב למפצל USB"],{mq:"איך מחברים מחשב וטלפון ספיר לאותה נקודת רשת (שרשור)?"}],
+["t5",28,"מה זה POE?","Power over Ethernet — יכולת של המתג להעביר מתח על גבי כבלי הנחושת (RJ-45), וכך מתבטל הצורך בכבלי מתח ושנאים.",["העברת מתח חשמלי על גבי כבל הרשת מהמתג","פרוטוקול להעברת וידאו","סוג של סיב אופטי","יחידת גיבוי למתח במקרה הפסקת חשמל"]],
+["t5",29,"מהם 5 השלבים שמתבצעים בחיבור טלפון בפעם הראשונה?","א. חיבור למתח — אם המתג תומך PoE חיבור לנקודה מספיק, אחרת שנאי. ב. חיבור לרשת — חיבור פשוט לנקודה או שרשור עם מחשב. ג. קבלת נתוני רשת משרת DHCP (IP, Default Gateway, Subnet Mask). ד. טעינת הקונפיגורציה — במתג ייעודי להצפנה; רישום ל-CM לפי MAC; מפתחות הצפנה, שרתי CM, גרסה, שפה, Speed ו-Duplex. ה. כניסה לשירות — חשבון ופרופיל משלו; אם לא מוגדר Voice VLAN יופיע ״מבצע רישום״ ויש לפנות לתקשו״ב.",["מתח ← חיבור לרשת ← קבלת כתובות מ-DHCP ← טעינת קונפיגורציה ← כניסה לשירות","חיבור לרשת ← כניסה לשירות ← מתח ← DHCP ← קונפיגורציה","קונפיגורציה ← מתח ← DHCP ← חיבור לרשת ← כניסה לשירות","DHCP ← מתח ← כניסה לשירות ← קונפיגורציה ← חיבור לרשת"],{mq:"מהו הסדר הנכון של השלבים בחיבור טלפון ספיר בפעם הראשונה?",v:[["טלפון ספיר מציג ״מבצע רישום״ ולא מתחבר. מה הסיבה הסבירה לפי החומר?",["לא הוגדר לו Voice VLAN בפורט","הכבל ארוך מדי","השרת DNS לא זמין","מסך הטלפון שבור"]]]}],
+["t5",30,"כיצד מתבצע תהליך הקמת השיחה?","1 טלפון A רשום ב-CM. 2 טלפון A שולח ל-CM בקשת Setup, וה-CM מחזיר Ack. 3 ה-CM בודק את תקינות הטלפון, יכולות החיוג, ההצפנה והמספר; אם הכל תקין שולח צלצול לטלפון B ובודק את מצבו (בשיחה, מנותק, מקבל, תפוס) ומחזיר ל-A צלצול חוזר. 4 אחרי החיבור הראשוני, השיחה מתנהלת בפרוטוקול RTP. 5 מעתה, גם אם ה-CM נופל — השיחה ממשיכה על גבי ה-RTP.",["השיחה ממשיכה, כי אחרי ההקמה היא עוברת ב-RTP","השיחה מתנתקת מיד","השיחה עוברת לקו אנלוגי","השיחה ממשיכה רק אם יש SRST"],{mq:"מה קורה לשיחה שכבר הוקמה אם שרת ה-CM נופל באמצעה?",v:[["מה הצעד הראשון שטלפון A מבצע כדי להקים שיחה, אחרי שהוא רשום ב-CM?",["שולח ל-CM בקשת Setup","שולח RTP ישירות לטלפון B","שולח ARP לטלפון B","מבקש כתובת מ-DHCP"]]]}],
+["t5",31,"מהו נתב ה-SRST?","נתב שמשמש גיבוי ל-Call Manager ברמת הבסיס — מעין CM בגרסה מצומצמת. נכנס לפעולה כשנופלים הקישורים לכל שרתי ה-CM. אין עדיפות למכשירים — ״הקודם זוכה״: עד 1000 טלפונים, הראשונים שעלו. שיחות בתוך הבסיס ללא הגבלה, ושיחות בין־בסיסיות עד 30 בו־זמנית.",["גיבוי ל-CM ברמת הבסיס — עד 1000 טלפונים ו-30 שיחות בין־בסיסיות","השרת הראשי של כל שרתי ה-CM","נתב שמצפין טלפונים חדשים","נתב שמחבר בין טלפון אנלוגי לרשת IP"],{v:[["כמה טלפונים יכול לשרת נתב SRST, וכיצד נקבע מי מהם יעבוד?",["עד 1000 — הראשונים שעלו (״הקודם זוכה״)","עד 30 — לפי דרגה","ללא הגבלה","עד 100 — לפי מספר השלוחה"]]]}],
+["t6",32,"מהו VC ואילו 2 סוגי VC קיימים בחיל?","VC (Video Camera) — רכיב שתומך בשיחות וידאו, עובד על רשת שביל החלב (כמו ספיר כחול). סוגים: VC אישי — לדיונים אישיים (1:1); VC חד״ן — לוועידה רבת משתתפים.",["רכיב לשיחות וידאו; VC אישי ו-VC חד״ן","מצלמת אבטחה; פנימית וחיצונית","כרטיס מסך; אנלוגי ודיגיטלי","תוכנת צ׳אט; קולי וכתוב"]],
+["t6",33,"מהו CISCO JABBER?","אפליקציה של Cisco שמקשרת בין המחשב לטלפון הספיר: שיחות, צ׳אט, מענה וניתוק מהמחשב, שיתוף מסך, פתיחת חלון VC אוטומטי, שליחת קבצים, סנכרון עם Outlook ועוד.",["אפליקציה שמקשרת בין המחשב לטלפון הספיר","אנטי־וירוס של Cisco","נתב גיבוי לטלפוניה","תוכנה לניהול תקלות"]],
+["t6",34,"מהו CISCO WEBEX?","אפליקציה של Cisco לשיחות וידאו רבות משתתפים, עם שיתוף מסך ומצגות, ציור בזמן אמת ושליחת קבצים; שימשה להדרכה מרחוק. לפי החוברת היא הורדה ואינה בשימוש בחיל.",["אפליקציה לשיחות וידאו רבות משתתפים — הורדה ואינה בשימוש בחיל","אפליקציה לשינוי הגדרות בטלפוני ספיר","שרת הטלפוניה הראשי","ממשק בין טלפון אנלוגי לרשת"]],
+["t6",35,"מהי אפליקציית NOC?","אפליקציה לשינוי הגדרות בסיסיות בטלפוני הספיר, שפותחה עבור גפי התקשוב בבסיסים: שינוי שם, הוספת קיצורים, שיוך VC ועוד.",["אפליקציה לשינוי הגדרות בסיסיות בטלפוני הספיר עבור גפי התקשוב","מוקד ניהול רשת ארצי","אפליקציה לשיחות וידאו","אנטי־וירוס לטלפונים"]],
+["t6",36,"כיצד נשייך VC לעמדה?","1 שיוך ה-VC לטלפון. 2 שיוך הטלפון ליוזר. 3 יציאה וכניסה מחדש לתוכנת הג׳אבר במחשב.",["משייכים VC לטלפון, את הטלפון ליוזר, ויוצאים ונכנסים לג׳אבר","מחברים את ה-VC ישירות למתג ומגדירים לו IP","מתקינים דרייבר ב-Device Manager","פותחים תקלה במש״ל כחול"]],
+["t6",37,"מהו VG (VOICE GATEWAY) וכיצד הוא בנוי?","רכיב שמקשר בין מרכזיית טלפוניה מבוססת IP לבין ציוד קצה שאינו עובד ב-IP — למשל טלפון אנלוגי — וממיר את המידע ביניהם כדי שיוכלו לדבר למרות פערי הטכנולוגיה.",["רכיב שמחבר טלפון אנלוגי למרכזייה מבוססת IP וממיר ביניהם","נתב גיבוי ל-Call Manager","אפליקציה לשיחות וידאו","מתג עם PoE"]]
+);
+
+// פרק מחשוב — 57 שאלות
+B.push(
+["m1",1,"מהן התכונות הנדרשות ממחשב?","פעולה אוטומטית (פיקוח אנושי מינימלי), מהירות בטיפול במידע, רמת דיוק גבוהה, ביצוע פעולות לוגיות על כמות עצומה של נתונים, ומהימנות (אחוז תקלות אפסי).",["פעולה אוטומטית, מהירות, דיוק, פעולות לוגיות על הרבה נתונים ומהימנות","מסך גדול, מקלדת נוחה ועכבר אלחוטי","חיבור לאינטרנט, אנטי־וירוס ומדפסת","משקל נמוך, סוללה ומצלמה"]],
+["m1",2,"מהן היחידות שמחשב חייב להכיל?","יחידות קלט/פלט — להכנסת נתונים ולצפייה בתוצאות; יחידות זיכרון — אגירת נתונים; יחידת בקרה — ״המוח״ שמקשר בין חלקי המערכת; יחידה אריתמטית־לוגית (ALU) — ביצוע החישובים.",["קלט/פלט, זיכרון, יחידת בקרה ויחידה אריתמטית־לוגית (ALU)","מסך, מקלדת, עכבר ורמקולים","כרטיס רשת, כרטיס מסך וכרטיס קול","מעבד, מדפסת, סורק וכונן"]],
+["m1",3,"מהו לוח האם ומה תפקידו?","הלוח הראשי במחשב (Mother Board) — לב המערכת. כל רכיב במחשב חייב להיות מחובר או מקושר אליו. מבוסס על ערכת שבבים (Chipset) שמגשרת בין רכיבי המחשב, ומכיל רכיבי אלקטרוניקה נוספים.",["הלוח הראשי שכל הרכיבים מחוברים אליו, עם ערכת שבבים שמגשרת ביניהם","כרטיס הרחבה לגרפיקה","הזיכרון הקבוע של המחשב","ספק הכוח של המחשב"]],
+["m1",4,"מהם 3 אפיקי הנתונים (BUS) על לוח האם?","Data Bus — אפיק הנתונים, מעביר את המידע; Address Bus — אפיק הכתובות, קובע לאן המידע נשלח; Control Bus — אפיק הבקרה, מתזמן את העברת המידע.",["Data, Address ו-Control","PCI, PCIe ו-AGP","USB, SATA ו-HDMI","Input, Output ו-Storage"],{v:[["מה תפקידו של ה-Address Bus?",["לקבוע לאן המידע צריך להישלח","להעביר את המידע עצמו","לתזמן את העברת המידע","לספק מתח לרכיבים"]]]}],
+["m2",5,"מהם כרטיסי הרחבה?","רכיבי חומרה שמתחברים ללוח האם ומאפשרים למחשב לבצע פעולות שלא תוכנן לבצע קודם, או מייעלים פעולות קיימות — למשל כרטיס קול, כרטיס רשת, כרטיס מסך.",["רכיבים שמתחברים ללוח האם ומוסיפים יכולות — קול, רשת, מסך","תוכנות שמרחיבות את מערכת ההפעלה","כבלים מאריכים לציוד היקפי","דיסקים חיצוניים"]],
+["m2",6,"מהם PCI ו-PCIE ומה ההבדל ביניהם?","PCI (Peripheral Component Interconnect) — תקן אפיק להוספת התקנים ללוח האם, פותח ע״י Intel. PCIe — שיפור של PCI שעובד מהר יותר (E = Express).",["שניהם תקני חריצי הרחבה; PCIe הוא גרסה מהירה יותר (Express)","PCI לזיכרון ו-PCIe למעבד","PCI חיצוני ו-PCIe פנימי","PCIe ישן ואיטי יותר מ-PCI"]],
+["m2",7,"מהו כרטיס רשת?","היחידה שמקשרת את המחשב לרשת — שער הגישה של המחשב לרשת. צרובה עליו כתובת ייחודית שאינה ניתנת לשינוי: כתובת MAC.",["היחידה שמחברת את המחשב לרשת, ועליה צרובה כתובת MAC","היחידה שמציגה תמונה על המסך","תוכנה לגלישה באינטרנט","כרטיס זיכרון לשמירת הגדרות רשת"]],
+["m2",8,"מהו כרטיס מסך?","הרכיב שאחראי על הצגת הפלט החזותי על המסך: לוקח את פלט המחשב ומורה למסך אילו פיקסלים להאיר ובאיזה צבע.",["הרכיב שמורה למסך אילו פיקסלים להאיר ובאיזה צבע","המסך עצמו","כבל ה-HDMI","תוכנת שומר המסך"]],
+["m3",9,"מהו המעבד?","רכיב החומרה שמבצע את הפקודות המאוחסנות בזיכרון; אחראי על עיבוד הנתונים והפקת המידע — ״המוח״ של המחשב.",["הרכיב שמבצע את הפקודות ומעבד את הנתונים — המוח של המחשב","הרכיב ששומר קבצים לאורך זמן","הרכיב שמציג תמונה","הרכיב שמספק חשמל"]],
+["m3",10,"מהו ה-CLOCK במעבד?","שעון שמייצר פולסים (דפקים) שקובעים את קצב פעולת המעבד והרכיבים, את קצב העברת הנתונים ועוד.",["שעון שמייצר פולסים שקובעים את קצב פעולת המעבד","השעון שמציג את השעה במערכת ההפעלה","סוללת ה-CMOS","מונה שמודד כמה זמן המחשב דולק"]],
+["m3",11,"מהו ה-PGA?","Pin Grid Array — מארז של שבב (מעבד) בצורת ריבוע עם מערך גדול של פינים (רגליים); תצורה נפוצה של מעבדים, שמחברת בין המעבד ללוח האם.",["מארז מעבד עם מערך פינים שמתחבר ללוח האם","סוג של זיכרון RAM","כרטיס גרפי","ממשק לחיבור דיסקים"],{n:"בחוברת ה-PGA מתואר גם כ״רכיב שעליו מתקינים את המעבד״. מדויק יותר: PGA הוא סוג המארז (הפינים על המעבד), והוא נכנס לשקע (Socket) תואם בלוח האם."}],
+["m3",12,"מהו מעבד Multi-Core?","מעבד מרובה ליבות: משלב שתי ליבות עצמאיות או יותר בתוך מארז אחד, כדי להשיג ביצועים גבוהים יותר. ככל שיש יותר ליבות — המעבד חזק יותר.",["מעבד עם שתי ליבות עצמאיות או יותר במארז אחד","שני מעבדים נפרדים על לוח האם","מעבד עם שעון כפול","מעבד שעובד גם כמעבד גרפי"]],
+["m3",13,"מהי טכנולוגיית Hyper-Threading?","טכנולוגיה שמפצלת תהליכים לתהליכונים (Threads) קטנים יותר, כך שהמעבד מבצע ריבוי משימות — ״כאילו״ יש שני מעבדים שעובדים במקביל, למרות שבפועל יש אחד.",["פיצול לתהליכונים כך שליבה אחת מתנהגת ״כאילו״ היא שתיים","הוספת ליבות פיזיות למעבד","האצת שעון המעבד מעבר למהירות המקורית","קירור המעבד באמצעות מאוורר כפול"],{v:[["מה ההבדל בין Multi-Core ל-Hyper-Threading?",["Multi-Core — כמה ליבות פיזיות; Hyper-Threading — ליבה אחת שמריצה שני תהליכונים","אין הבדל","Hyper-Threading מוסיף ליבות פיזיות","Multi-Core הוא שם ישן ל-Hyper-Threading"]]]}],
+["m3",14,"לפי אילו 2 מאפיינים עיקריים ניתן להבדיל בין מעבדים?","מהירות — נמדדת ב-MHz או ב-GHz (מיליוני/מיליארדי תנודות בשנייה). רוחב אפיק נתונים — כמות הנתונים שהמעבד מעבד בו־זמנית (32 ביט או 64 ביט).",["מהירות (GHz) ורוחב אפיק הנתונים (32/64 ביט)","צבע וגודל","מחיר ויצרן","מספר יציאות USB ונפח דיסק"]],
+["m3",15,"מהו מעבד 32bit? מהו מעבד 64bit?","המונחים מתארים את צורת העבודה של המעבד: מעבד 64 ביט יכול להשתמש בו־זמנית ב-64 סיביות נתונים בזיכרון, לעומת מעבד 32 ביט שמשתמש רק ב-32 סיביות בו־זמנית.",["כמות הסיביות שהמעבד מעבד בו־זמנית","מספר הליבות במעבד","מהירות השעון במגה־הרץ","גודל זיכרון המטמון"],{mq:"מה מציין המונח 32bit או 64bit במעבד?"}],
+["m3",16,"האם מעבד 64bit יכול לעבוד עם תוכנות בתצורת 32bit? האם יכול להיות ההפך?","כן — מעבד 64 ביט מריץ תוכנות של 64 ביט ומטה (כולל 32 ביט). ההפך: לפי החוברת מעבד 32 ביט יריץ חלק מתוכנות ה-64 ביט ובצורה לא מלאה.",["מעבד 64 ביט מריץ גם תוכנות 32 ביט","מעבד 64 ביט מריץ רק תוכנות 64 ביט","מעבד 32 ביט מריץ את כל תוכנות ה-64 ביט במלואן","אין שום תאימות בין 32 ל-64 ביט"],{mq:"מה נכון לגבי תאימות בין מעבדים לתוכנות?",n:"בחוברת כתוב שמעבד 32 ביט יכול להריץ חלק מתוכנות ה-64 ביט. בפועל מעבד 32 ביט אינו יכול להריץ קוד 64 ביט כלל. הכיוון ההפוך (64 מריץ 32) נכון."}],
+["m4",17,"מהו זיכרון נדיף? מהו זיכרון בלתי נדיף?","נדיף — זקוק לאספקת חשמל רציפה כדי שהמידע לא יימחק (״זיכרון זמני״), ויתרונו מהירות. בלתי נדיף — שומר את המידע גם ללא חשמל (״זיכרון קבוע״).",["נדיף נמחק בלי חשמל (כמו RAM); בלתי נדיף נשמר גם בלי חשמל (כמו ROM)","נדיף נשמר בלי חשמל; בלתי נדיף נמחק","נדיף הוא זיכרון חיצוני; בלתי נדיף פנימי","נדיף איטי; בלתי נדיף מהיר תמיד"],{v:[["איזה מהבאים הוא זיכרון נדיף?",["RAM","ROM","Flash","HDD"]]]}],
+["m4",18,"מהו זיכרון מסוג ROM?","זיכרון בלתי נדיף שמתוכנת ע״י היצרן; הנתונים נצרבים בו לקריאה בלבד. בדרך כלל שומרים בו את תוכנת האתחול (Boot) ואת ה-BIOS. כיום משתמשים בעיקר בגרסאות משופרות שניתנות לשינוי: PROM, EPROM, EEPROM.",["זיכרון בלתי נדיף לקריאה בלבד שנצרב ע״י היצרן — למשל BIOS","זיכרון נדיף לקריאה וכתיבה","זיכרון מטמון בתוך המעבד","דיסק קשיח מהיר"]],
+["m4",19,"מהו זיכרון הבזק (FLASH)?","זיכרון בלתי נדיף שמאפשר כתיבה, מחיקה וכתיבה חוזרת. נפוץ במצלמות דיגיטליות, נגני MP3 ודיסק און קי, בזכות שמירת המידע ללא חשמל וגודל קטן ביחס לנפח.",["זיכרון בלתי נדיף שאפשר לכתוב, למחוק ולכתוב שוב — כמו דיסק און קי","זיכרון נדיף מהיר","זיכרון לקריאה בלבד","זיכרון וירטואלי בדיסק"]],
+["m4",20,"מהו זיכרון RAM?","Random Access Memory — זיכרון נדיף לקריאה וכתיבה, לאחסון זמני של מה שרץ במחשב בזמן אמת. יתרון: זמן תגובה בננו־שניות. חיסרון: כל הפסקת מתח מוחקת את המידע.",["זיכרון נדיף ומהיר לאחסון זמני של מה שרץ כרגע","זיכרון קבוע לשמירת קבצים","זיכרון לקריאה בלבד","זיכרון על כרטיס המסך בלבד"]],
+["m4",21,"מהו DDR SDRAM?","Double Data Rate — זיכרון RAM משופר ומהיר יותר (מעביר נתונים פעמיים בכל מחזור שעון); הנפוץ ביותר כיום. גרסאות DDR1 עד DDR5; כל דור מכפיל את הקצב. יש הבדל פיזי — מיקום החריץ בכל דור שונה, כך שכל DDR מתאים רק ללוח אם שתומך בו.",["זיכרון RAM מהיר; לכל דור (DDR1–DDR5) חריץ שונה ואין תאימות בין דורות","סוג של דיסק קשיח","זיכרון ROM שניתן לצריבה","סוג של כרטיס מסך"],{v:[["האם אפשר להכניס זיכרון DDR4 ללוח אם שתומך רק ב-DDR3?",["לא — החריץ ממוקם אחרת בכל דור","כן — כל הדורות תואמים","כן, אבל במהירות נמוכה","רק אם מעדכנים את ה-BIOS"]]]}],
+["m4",22,"כיצד נחליף או נתקין התקן במחשב?","1 ניתוק כבל המתח ופריקת המתח. 2 פתיחת מכסה המחשב. 3 בדיקה שההתקן מתאים לחומרה (למשל DDR מתאים ללוח האם). 4 חיבור ההתקן במקום המתאים (כרטיסי הרחבה בחריצי PCI/PCIe, זיכרון בחריצי ה-RAM). 5 הפעלה מחדש ובדיקה שההתקן נקלט.",["לנתק מתח ולפרוק אותו","לפתוח את המכסה","להכניס את ההתקן לחריץ","להדליק את המחשב"],{mq:"מהו הצעד הראשון בהתקנת רכיב חומרה בתוך המחשב?"}],
+["m4",23,"מהו זיכרון מטמון (CACHE)?","זיכרון נדיף קטן ומהיר (מאות KB עד כמה MB) שנמצא בין המעבד ליחידות האחסון, ושומר מידע שחוזרים אליו — כך חוסכים חישובים ושליפות מהמקור האיטי.",["זיכרון קטן ומהיר בין המעבד לזיכרון הראשי, לשליפה מהירה של מידע חוזר","זיכרון קבוע לשמירת BIOS","שטח בדיסק שמשמש כ-RAM","תיקיית קבצים זמניים של הדפדפן בלבד"]],
+["m4",24,"מהו זיכרון וירטואלי?","טכניקה לניהול זיכרון: כשה-RAM מתמלא, מערכת ההפעלה מעבירה בלוקים של מידע לשטח בדיסק ומשתמשת בו כהרחבה של ה-RAM. זה לא פתרון מושלם, כי הדיסק איטי בהרבה מה-RAM.",["שימוש בשטח בדיסק כהרחבה ל-RAM כשהוא מתמלא","זיכרון RAM של מכונה וירטואלית","זיכרון מטמון בתוך המעבד","זיכרון בענן"],{n:"בחוברת כתוב שהמערכת משתמשת ״בזיכרון ה-ROM״. הכוונה בפועל לדיסק (קובץ ההחלפה, Page File). ROM הוא לקריאה בלבד ואי אפשר לכתוב אליו."}],
+["m5",25,"מהו HDD?","Hard Disk Drive — רכיב בלתי נדיף לשמירה ואחסון אמין של נתונים בנפח גדול; זמן הגישה איטי יחסית ל-RAM. מערכת ההפעלה מנהלת אותו בעזרת מערכת קבצים. בא בשתי תצורות: פנימי (בתוך המחשב) וחיצוני (מתחבר בכבל).",["דיסק קשיח — אחסון בלתי נדיף בנפח גדול, איטי יחסית ל-RAM","זיכרון נדיף מהיר","כרטיס מסך","זיכרון לקריאה בלבד"]],
+["m5",26,"מהו SSD?","Solid State Drive — כונן אחסון בנוי כמעגל מודפס, ללא חלקים מכניים; לכן מהיר, חסכוני, שקט ועמיד. החיסרון: המחיר.",["כונן ללא חלקים מכניים — מהיר, שקט ועמיד, אך יקר","דיסק עם פלטות מסתובבות","זיכרון נדיף","כונן תקליטורים"],{v:[["מהו החיסרון העיקרי של SSD לעומת HDD, לפי החומר?",["המחיר","האיטיות","הרעש","הרגישות לזעזועים"]]],n:"בחוברת כתוב שה-SSD הוא התקדמות של זיכרון ROM. מדויק יותר: SSD מבוסס על זיכרון הבזק (Flash)."}],
+["m6",27,"מהם אמצעי קלט/פלט?","אמצעי I/O. קלט — אמצעים שבעזרתם המחשב קולט נתונים: מקלדת, עכבר, סורק. פלט — אמצעים שבעזרתם המחשב מציג נתונים: מסך, מדפסת, רמקולים.",["קלט: מקלדת, עכבר, סורק; פלט: מסך, מדפסת, רמקולים","קלט: מסך, מדפסת; פלט: מקלדת, עכבר","קלט: RAM; פלט: ROM","קלט: מעבד; פלט: לוח אם"],{v:[["איזה מהבאים הוא אמצעי קלט?",["סורק","מדפסת","רמקולים","מסך"]]]}],
+["m6",28,"מהו ממשק PS2?","ממשק ישן יחסית לחיבור מקלדת ועכבר, שפחות בשימוש מאז ה-USB. ירוק — לעכבר; סגול — למקלדת.",["ממשק ישן למקלדת (סגול) ולעכבר (ירוק)","ממשק תצוגה דיגיטלי","ממשק לחיבור דיסקים","ממשק רשת"]],
+["m6",29,"מהו ממשק USB?","תקן לחיבור מחשבים לציוד היקפי, החלופה התקנית והפופולרית ביותר לחיבור חומרה. עם השנים נוצרו סוגים שונים, כמו USB Micro ו-Type C.",["תקן נפוץ לחיבור ציוד היקפי, עם סוגים כמו Micro ו-Type C","ממשק תצוגה אנלוגי","ממשק לדיסקים בשרתים בלבד","פרוטוקול רשת"]],
+["m6",30,"מהם ממשקי VGA ו-DVI ואילו 3 סוגי DVI קיימים?","ממשקי תצוגה בין כרטיס המסך למסך. VGA — נפוץ, אנלוגי, תמונה בלבד, 15 פינים (DB15). DVI — מתקדם יותר, בדרך כלל תמונה בלי קול. DVI-A — אות וידאו אנלוגי (ניתן להתאים ל-VGA); DVI-D — דיגיטלי; DVI-I — גם אנלוגי וגם דיגיטלי באותו מחבר.",["DVI-A אנלוגי, DVI-D דיגיטלי, DVI-I גם וגם","DVI-1, DVI-2, DVI-3 לפי מהירות","DVI-S, DVI-M, DVI-L לפי גודל","DVI-V לווידאו, DVI-A לשמע, DVI-D לנתונים"],{mq:"מהם שלושת סוגי ה-DVI?",v:[["מה נכון לגבי ממשק VGA?",["אנלוגי, מעביר תמונה בלבד, 15 פינים","דיגיטלי, מעביר תמונה ושמע","דיגיטלי, 19 פינים","ממשק לחיבור מקלדת"]]]}],
+["m6",31,"מהו ממשק HDMI?","מהממשקים הנפוצים כיום; מעביר שמע ווידאו, ובו אפשר להעביר וידאו ברזולוציה גבוהה מאוד.",["ממשק דיגיטלי נפוץ שמעביר וידאו ושמע ברזולוציה גבוהה","ממשק אנלוגי לתמונה בלבד","ממשק לחיבור מדפסות","ממשק לחיבור דיסקים"]],
+["m6",32,"מהו ממשק SCSI? מהו ממשק SAS?","SCSI (Small Computer System Interface) — תקן להעברת נתונים בצורה מקבילית בקצב גבוה, בעיקר לחיבור שרתים להתקני אחסון. SAS (Serial Attached SCSI) — מחליף את SCSI הישן (טורי).",["SCSI — מקבילי, לחיבור שרתים לאחסון; SAS — הגרסה הטורית שמחליפה אותו","SCSI — ממשק תצוגה; SAS — ממשק שמע","SCSI — כבל רשת; SAS — כבל קונסול","SCSI — לעכבר; SAS — למקלדת"]],
+["m6",33,"מהו ממשק SATA?","Serial Advanced Technology Attachment — תקן טורי להעברת נתונים בין המחשב לאמצעי אחסון (דיסק קשיח, כונן DVD). מהירויות 1.5/3/6 Gb/s; בניגוד ל-SCSI, כבל דק וגמיש, ומשמש במחשבים אישיים. מספק אמינות ושלמות נתונים גבוהות.",["תקן טורי לחיבור דיסקים וכוננים במחשבים אישיים","תקן מקבילי לחיבור מדפסות","ממשק תצוגה","ממשק לחיבור מקלדת ועכבר"]],
+["m7",34,"מהי תוכנת ה-BIOS? כיצד נפתח אותה?","תוכנה צרובה על רכיב ROM בלוח האם, שמכילה את הגדרות הבסיס של המערכת; בלעדיה המחשב לא יכול לעבוד. פתיחה: מדליקים/מאתחלים, ובזמן שהמסך ריק לוחצים על מקש הכניסה (בחוברת F10; תלוי ביצרן — לעיתים Del או F2), ואז נכנסים לכרטיסייה הרלוונטית.",["מדליקים את המחשב ולוחצים על מקש ייעודי (בחוברת F10) לפני עליית מערכת ההפעלה","נכנסים ל-Control Panel ובוחרים BIOS","מקלידים bios ב-CMD","פותחים את מנהל ההתקנים"],{mq:"איך נכנסים להגדרות ה-BIOS?"}],
+["m7",35,"מהם התפקידים העיקריים של ה-BIOS?","1 זיהוי רכיבי החומרה — כל התקן חייב להזדהות דרכו. 2 קביעת הגדרות חומרה בסיסיות והפעלה או כיבוי של התקנים. 3 קביעת סדר התקני האחסון — באיזה התקן לחפש את מערכת ההפעלה (Boot Order). 4 הרצת פונקציות שפועלות גם כשהמחשב כבוי — שעון ותאריך.",["קביעת סדר האתחול (באיזה התקן לחפש את מערכת ההפעלה)","התקנת תוכנות Office","סריקת וירוסים","ניהול משתמשים בדומיין"],{mq:"איזה מהבאים הוא תפקיד של ה-BIOS?"}],
+["m7",36,"מהי בדיקת POST?","Power On Self Test — בדיקה שה-BIOS מבצע מיד עם ההדלקה, כדי לבדוק אם יש בעיות חומרה. רק אחרי שהבדיקה מסתיימת המחשב מחפש את מערכת ההפעלה וטוען אותה. תקלה מדווחת בהודעת שגיאה, בצפצופים או בנורה מהבהבת. לפי החוברת אפשר להפעיל אותה ביוזמה בלחיצה על F2 בזמן העלייה.",["בדיקה עצמית של החומרה מיד בהדלקה, לפני טעינת מערכת ההפעלה","סריקת וירוסים בהדלקה","בדיקת חיבור לאינטרנט","גיבוי אוטומטי של הקבצים"],{v:[["כיצד ידווח מחשב על תקלה שנמצאה בבדיקת POST?",["בהודעת שגיאה, בצפצופים או בנורה מהבהבת","בהודעת דוא״ל למנהל הרשת","ביומן אירועים בלבד","הוא לא מדווח — רק לא נדלק"]]]}],
+["m7",37,"מהו שבב ה-CMOS? מהי סוללת ה-CMOS?","שבב על לוח האם שמאחסן את כל הגדרות ה-BIOS. סוללת ליתיום (סוללת CMOS) מספקת לו זרם כך שגם כשהמחשב כבוי ההגדרות נשמרות. אם מוציאים את הסוללה — ההגדרות חוזרות לברירת המחדל.",["שבב ששומר את הגדרות ה-BIOS, וסוללה ששומרת עליהן כשהמחשב כבוי","זיכרון RAM נוסף וסוללת גיבוי למחשב נייד","מעבד עזר וסוללה לשעון בלבד","כרטיס רשת וסוללה למודם"]],
+["m7",38,"ציין 3 דרכים לאיפוס הגדרות ה-BIOS להגדרות היצרן.","1 הדרך הפשוטה: כניסה ל-BIOS ובחירה ב-Load Setup Defaults (השם משתנה בין מחשבים). 2 הוצאת סוללת ה-CMOS ל-30 שניות. 3 איפוס בעזרת המגשר (ג׳אמפר) ליד הסוללה — הוצאתו פותחת מעגל ומאפסת. לפעמים יש גם כפתור ייעודי ליד הסוללה.",["Load Setup Defaults, הוצאת סוללת CMOS ל-30 שניות, וג׳אמפר","פרמוט הדיסק, החלפת מעבד והתקנה מחדש","כיבוי והדלקה, עדכון Windows ומחיקת קבצים זמניים","ניתוק כבל רשת, החלפת מסך וניקוי מאוורר"]],
+["m8",39,"מהו כבל DP?","DisplayPort — חיבור דיגיטלי מתקדם עם ביצועים גבוהים, זול יותר מ-HDMI, שיכול להתחבר (במתאם) לטכנולוגיות קודמות כמו VGA ו-DVI. מעביר וידאו ואודיו באיכות גבוהה וגם ערוץ תקשורת נוסף בין התקנים.",["DisplayPort — חיבור תצוגה דיגיטלי שמעביר וידאו ואודיו","Data Port — כבל רשת מהיר","Disk Port — חיבור לדיסק קשיח","Dual Power — כבל חשמל כפול"]],
+["m8",40,"מהו KVM?","Keyboard Video Mouse — רכיב שמחבר כמה מחשבים/שרתים למקלדת, מסך ועכבר מרכזיים אחד, ומאפשר לעבור ביניהם בלחיצת כפתור או בקיצור מקשים. המחשבים מתחברים אליו בכבלי תצוגה (VGA, HDMI, DP).",["רכיב שמאפשר לשלוט בכמה מחשבים ממקלדת, מסך ועכבר אחד","מתג רשת לשרתים","סוג של כרטיס מסך","מערכת הפעלה לשרתים"]],
+["m8",41,"מהו פיקסל?","נקודת צבע; מיליוני נקודות כאלה יוצרות את התמונה על המסך. בכל פיקסל משלבים 3 צבעים, לכל אחד 256 רמות עוצמה — וכך מתקבלים יותר מ-16 מיליון צבעים.",["נקודת צבע בתמונה — 3 צבעים × 256 רמות = יותר מ-16 מיליון צבעים","יחידת מדידה של מהירות מעבד","כבל תצוגה","יחידת זיכרון של כרטיס המסך"]],
+["m8",42,"מהי רזולוציה?","מידת החדות ורמת הפירוט של התמונה, הנמדדת במספר הפיקסלים שמרכיבים את התמונה השלמה.",["מספר הפיקסלים שמרכיבים את התמונה — קובע חדות ופירוט","קצב רענון המסך","גודל המסך באינצ׳ים","בהירות המסך"]],
+["m8",43,"מהו פרוטוקול EDID?","Extended Display Identification Data — תקשורת בין המקור (המחשב) ליעד (המסך): המסך מדווח למחשב על יכולותיו, כמו הרזולוציה, והמחשב מתאים את עצמו אוטומטית. עם כמה מסכים — כל מסך נשאל בנפרד.",["המסך מדווח למחשב על הרזולוציה שלו, והמחשב מתאים את עצמו","פרוטוקול להצפנת תמונה","דרייבר של כרטיס המסך","פרוטוקול לחיבור מקלדת"]],
+["m9",44,"מהי מדפסת הזרקת דיו ומהי מדפסת לייזר?","הזרקת דיו — מתיזה דיו נוזלי על הדף, באיכות גבוהה. לייזר — מדפיסה באבקת טונר בעזרת קרן לייזר. בחיל משתמשים במדפסות לייזר בלבד.",["דיו — מתיזה דיו נוזלי; לייזר — אבקת טונר וקרן לייזר. בחיל: לייזר בלבד","דיו — אבקה; לייזר — דיו נוזלי","שתיהן משתמשות בדיו נוזלי","בחיל משתמשים בהזרקת דיו בלבד"]],
+["m9",45,"מהם 4 הרכיבים העיקריים במדפסת (פרט לפי סדר פעולת ההדפסה)?","1 מגירת דפים (Tray) — מחזיקה את הדפים; הם עוברים דרך גומיות אל התוף. 2 תוף (Drum) — גליל שמסתובב; קרן הלייזר ״מציירת״ עליו את תוכן ההדפסה, והוא מושך טונר ומצמיד אותו לדף. 3 טונר (Cartridge) — מיכל אבקה ב-4 גוונים. 4 פיוזר (Fuser) — השלב האחרון: מחמם את האבקה כדי שתידבק לדף.",["מגירת דפים ← תוף ← טונר ← פיוזר","טונר ← מגירת דפים ← פיוזר ← תוף","פיוזר ← תוף ← מגירת דפים ← טונר","תוף ← פיוזר ← טונר ← מגירת דפים"],{mq:"מהו סדר הרכיבים במדפסת לייזר לפי תהליך ההדפסה?",n:"בחוברת ארבעת גווני הטונר מופיעים כאדום, צהוב, כחול ושחור. בפועל אלה ציאן, מג׳נטה, צהוב ושחור (CMYK).",v:[["איזה רכיב במדפסת לייזר מחמם את אבקת הטונר כדי שתידבק לדף?",["פיוזר (Fuser)","תוף (Drum)","מגירת דפים (Tray)","טונר (Cartridge)"]]]}],
+["m9",46,"מהן 4 דרכי ההתחברות למדפסת, וכיצד נגדיר כל אחת?","1 מקומית (Local) — מחוברת למחשב אחד ב-USB; מתקינים דרייבר משרת ההתקנות, ואז Control Panel ← View Devices and Printers ← Add a printer. 2 מקומית משותפת — ניגשים לכתובת ה-IP של המחשב שאליו מחוברת המדפסת דרך Run (Win+R); כשהמחשב המשתף כבוי אי אפשר להדפיס. 3 שרתית — הגדרה בשרת המדפסות (תיקייה רשתית שמציגה את כל המדפסות). 4 רשתית (Network Printer) — מדפסת אחת למחשבים רבים, מוגדרת עם כתובת IP קבועה.",["מקומית, מקומית משותפת, שרתית ורשתית","USB, Bluetooth, Wi-Fi ו-NFC","דיו, לייזר, מחט ותרמית","ראשית, משנית, גיבוי וחירום"],{v:[["מה החיסרון של מדפסת מקומית משותפת?",["אי אפשר להדפיס כשהמחשב המשתף כבוי","היא דורשת כתובת IP קבועה","אפשר להדפיס רק משרת","היא עובדת רק ב-USB"]]]}],
+["m9",47,"מהו ה-Printer Spooler וכיצד ניכנס אליו?","תור ההדפסה — מראה מה מודפס כרגע ומתי יודפס המסמך שנשלח. נכנסים דרך Control Panel ← Hardware and Sound ← Devices and Printers, ובוחרים את המדפסת.",["תור ההדפסה — Control Panel ← Hardware and Sound ← Devices and Printers","הדרייבר של המדפסת — Device Manager","מגירת הדפים","שרת ההתקנות"]],
+["m10",48,"מהי מערכת הפעלה?","תוכנה שמנהלת את משאבי החומרה והתוכנה במחשב ומספקת את התשתית להרצת יישומים; מקשרת בין המשתמש, החומרה ותוכנות המחשב. בדרך כלל עולה עם הדלקת המחשב.",["תוכנה שמנהלת את משאבי החומרה והתוכנה ומקשרת בין המשתמש לחומרה","תוכנה לעריכת מסמכים","השבב שמאחסן את הגדרות ה-BIOS","אנטי־וירוס מובנה"]],
+["m10",49,"מהם קבצי DLL?","Dynamic Link Library — קבצי מערכת שתוכנות עושות בהם שימוש משותף. במקום ליצור אותם בתיקייה של כל תוכנה, יש קובץ אחד שכל התוכנות משתמשות בו.",["ספריות קוד משותפות שתוכנות רבות משתמשות בהן","קבצי גיבוי של מערכת ההפעלה","דרייברים של מדפסות בלבד","קבצי סיסמאות"]],
+["m10",50,"כיצד נבצע פרמוט/התקנת מערכת הפעלה למחשב?","מתקינים לפי הרשת המבוקשת (שביל, גלקסיה וכו׳). בהתקנה מהרשת לוחצים F12 בהדלקה ובוחרים IPv4/IPv6; ההתקנה נעשית משרת WDS (Windows Deployment Services) עם Image שכולל את האפליקציות הרלוונטיות (דרייברים, Office). בסוף מתקבל ״Deployment Completed״ ומזינים משתמש (חזק).",["F12 בהדלקה, בחירת IPv4/IPv6, והתקנה משרת WDS עם Image מתאים","מורידים את Windows מהאינטרנט ומתקינים מדיסק און קי","פותחים Device Manager ובוחרים התקנה מחדש","נכנסים ל-BIOS ובוחרים Install Windows"],{v:[["מאיזה שרת מותקנת מערכת ההפעלה בהתקנה מהרשת?",["WDS — Windows Deployment Services","DHCP","DNS","ePO"]]]}],
+["m10",51,"מה ה-Control Panel מאפשר לנו לעשות?","התקנה והסרה של תוכנות; התקנת רכיבים (מדפסת, מקלדת וכו׳); הגדרות מערכת; הגדרת תצוגה של חלונות וסמלים; קביעת תאריך ושעה. חלק מהפעולות דורשות הרשאות מנהל מקומי.",["התקנה והסרה של תוכנות, התקנת התקנים, הגדרות תצוגה ותאריך","רק כיבוי המחשב","ניהול טבלת ה-CAM","עריכת קוד המקור של Windows"]],
+["m10",52,"מהו דרייבר?","מנהל התקן — קוד או אוסף קבצים שמאפשר למערכת ההפעלה לתקשר עם רכיב חומרה. הוא מכיר את פרטי הרכיב ואת אפשרויות הניהול שלו, ומותאם לגרסת מערכת ההפעלה ולמעבד.",["תוכנה שמאפשרת למערכת ההפעלה לתקשר עם רכיב חומרה","רכיב חומרה שמחבר דיסקים","תוכנת אנטי־וירוס","כבל שמחבר מדפסת"]],
+["m10",53,"מה ניתן לעשות ב-Device Manager?","רואים בו את כל ההתקנים שהמחשב מכיר, ובלחיצה על התקן אפשר: לקרוא את פרטי הדרייבר, לעדכן אותו, להחזיר למצב קודם (Roll Back), להשבית את ההתקן ולהסיר אותו. נדרש משתמש חזק.",["לצפות בהתקנים, לעדכן או להחזיר דרייבר, להשבית ולהסיר התקן","לסיים תהליכים תקועים","לנהל משתמשים וקבוצות","לבדוק קישוריות לרשת"]],
+["m10",54,"מה ניתן לראות/לעשות ב-Task Manager?","בחלון Processes — כל התהליכים: אפשר לסיים תהליכים, להפעיל תהליכים מחדש ולראות את הצריכה שלהם. בחלון Performance — ביצועי המחשב: מעבד, זיכרון RAM, דיסק ורשת.",["לסיים תהליכים ולראות ביצועי מעבד, זיכרון, דיסק ורשת","לעדכן דרייברים","לשתף תיקיות ברשת","לשנות את סדר האתחול"]],
+["m10",55,"מה ניתן לעשות ב-Computer Management?","גישה לכלי ניהול: הגדרת משימות מתוזמנות; צפייה באירועים (Event Viewer) לתחקור קריסות ושגיאות; תיקיות משותפות; משתמשים וקבוצות מקומיים; ובלשונית Services and Applications — ניהול השירותים והפונקציות במחשב.",["משימות מתוזמנות, Event Viewer, תיקיות משותפות, משתמשים וקבוצות ושירותים","רק התקנת תוכנות","רק בדיקת קישוריות","שינוי הגדרות ה-BIOS"]],
+["m10",56,"מהו ה-CMD, ואילו 4 פקודות עיקריות למדנו לבצע בו?","כלי לניהול המחשב בעזרת פקודות ב-Windows. 1 ping — בדיקת קישוריות: שולח 4 חבילות Echo ומצפה לקבל אותן בחזרה. 2 tracert — מציג את כתובות הציוד שעוברים בדרך ליעד. 3 ipconfig /all — מידע מפורט על המחשב ונתוני הרשת (כתובות, שרתים ועוד). 4 nslookup — מציג את כתובת ה-IP שמתאימה לשם דומיין (שאילתת DNS).",["ping, tracert, ipconfig /all ו-nslookup","show run, show vlan, show ip ו-write","copy, paste, cut ו-delete","enable, configure, hostname ו-exit"],{v:[["איזו פקודה ב-CMD מציגה את המסלול (התחנות בדרך) עד ליעד?",["tracert","ping","nslookup","ipconfig /all"]],["כמה חבילות שולחת פקודת ping כברירת מחדל ב-Windows?",["4","1","10","ללא הגבלה"]]]}],
+["m10",57,"מהי תיקיית Instpoint, וכיצד ניגשים אליה?","תיקייה רשתית ברשת שביל החלב, שבה יש אפליקציות, קבצים ומסמכים להתקנה במחשב. ניגשים אליה משורת ה-Run (Win+R) ומקלידים: ⁦\\\\IAF-INSTPOINT\\SUPPORT$⁩",["תיקייה רשתית עם תוכנות להתקנה; ניגשים דרך Win+R","תיקיית קבצים זמניים במחשב","תור ההדפסה","תיקייה בדיסק C שמכילה את ה-BIOS"]]
+);
+
+// פרק שרתים — 46 שאלות
+B.push(
+["s1",1,"מהו שרת?","מחשב שמריץ תוכנה או תוכנות ומספק שירותים למחשבים אחרים. דרישות החומרה שלו גבוהות מאלה של מחשב שולחני, ויש לו דרישות מיוחדות של זמינות, שרידות וגיבוי. שרת הוא גם תוכנה שמספקת שירותים לתוכנות לקוח (Client).",["מחשב או תוכנה שמספקים שירותים ללקוחות, עם דרישות זמינות, שרידות וגיבוי","כל מחשב עם יותר מדיסק אחד","מתג רשת מרכזי","מחשב נייד של מנהל הרשת"]],
+["s1",2,"מהו RAID?","שיטה לאיחוד כמה דיסקים קשיחים ליחידה לוגית אחת: גישה מקבילית לכמה דיסקים, שיפור מהירות ואמינות. מערכת ההפעלה מתייחסת למערך כדיסק אחד. בדרך כלל כל הדיסקים מאותו סוג ונפח.",["איחוד כמה דיסקים ליחידה לוגית אחת לשיפור מהירות ואמינות","סוג של זיכרון RAM לשרתים","פרוטוקול לגיבוי ברשת","תוכנה לאיחוי הדיסק"]],
+["s1",3,"פרט על RAID 0, RAID 1 ו-RAID 0+1.","RAID 0 — לפחות 2 דיסקים; המידע מחולק בחלקים קבועים בין הדיסקים לפי הסדר — מגביר מהירות (בלי גיבוי). RAID 1 — לפחות 2 דיסקים; כל המידע משוכפל לכל הדיסקים (״מערך ראי״) — גיבוי מלא ושרידות גבוהה. RAID 0+1 — לפחות 4 דיסקים; משלב חלוקה (0) ושכפול לקבוצה זהה (1).",["RAID 0 — פיזור למהירות; RAID 1 — שיקוף לגיבוי; RAID 0+1 — שילוב, לפחות 4 דיסקים","RAID 0 — שיקוף; RAID 1 — פיזור; RAID 0+1 — דיסק אחד","RAID 0 — גיבוי לענן; RAID 1 — גיבוי לקלטת; RAID 0+1 — שניהם","RAID 0 — ללא דיסקים; RAID 1 — דיסק אחד; RAID 0+1 — שני דיסקים"],{v:[["באיזה מערך RAID נפילת דיסק אחד אינה גורמת לאובדן מידע, כי המידע משוכפל?",["RAID 1","RAID 0","אף אחד מהם","RAID 0 עם דיסק אחד"]],["מהו מספר הדיסקים המינימלי ל-RAID 0+1?",["4","2","3","1"]]]}],
+["s1",4,"במה נתחשב בעת תכנון פריסת שרתים?","גישה נוחה לשרת לטיפול ותחזוקה; ריכוז השרתים במקום אחד; אוורור וקירור (מרחק מספיק); סידור כבילה (מיקום נוח, אורכים מתאימים); אפשרות לחבר מקלדת ועכבר; אפשרות להתרחבות עתידית.",["גישה לתחזוקה, ריכוז, אוורור וקירור, כבילה מסודרת והתרחבות עתידית","צבע הארון והמותג","קרבה לחלון ולמזגן ביתי","מספר המשתמשים בארגון בלבד"]],
+["s1",5,"פרט על 3 תצורות השרתים שנלמדו: מבנה, יתרונות וחסרונות.","TOWER — דומה למארז מחשב רגיל (לרוב גדול יותר). יתרונות: קירור קל, אין הגבלה לכמות השרתים. חסרונות: גדול, כבד, כבילה מסובכת, רועש. RACK — צורה סטנדרטית שמתאימה לארון שרתים. יתרונות: עצמאי (מכיל את כל הרכיבים), יעיל (הרבה שרתים בארון). חסרונות: צריכת חשמל גבוהה, קושי בתחזוקה. BLADE — מארז מודולרי עם ״להבים״ (שרתים) שמחוברים ללוח מרכזי, עם קירור, ספקי כוח, רשת וניהול משותפים. יתרונות: הוזלת עלויות לטווח ארוך, ניהול קל. חיסרון: יקר ברכישה ראשונית.",["Blade","Tower","Rack","Desktop"],{mq:"איזו תצורת שרתים יקרה ברכישה הראשונית אך חוסכת עלויות לטווח ארוך וקלה לניהול?",v:[["מה חיסרון של שרת Tower?",["גדול, כבד ורועש, עם כבילה מסובכת","יקר מאוד ברכישה ראשונית","מוגבל לארון שרתים אחד","אי אפשר לקרר אותו"]],["איזו תצורת שרת בנויה בצורה סטנדרטית שמתאימה לארון שרתים, ומכילה את כל רכיביה?",["Rack","Tower","Blade","Desktop"]]]}],
+["s1",6,"מהו שרת NAS?","Network Attached Storage — מערכת אחסון קבצים חיצונית ברשת נתונים רגילה (TCP/IP). מאפשרת ליצור תיקיות רשתיות שאליהן פונים שרתים ומשתמשים כדי לשמור ולקרוא קבצים (בדומה ל-Google Drive). בחיל יש תיקיות כאלה בכל בסיס/גף/מדור.",["אחסון קבצים ברשת הרגילה (TCP/IP) עם תיקיות רשתיות משותפות","רשת סיבים ייעודית שבה השרת רואה דיסק מקומי","דיסק פנימי בתוך השרת","שרת לחלוקת כתובות IP"]],
+["s1",7,"מהו שרת SAN?","Storage Area Network — רשת ייעודית שמחברת רכיבי אחסון וגיבוי חיצוניים לשרתים (לרוב בסיבים אופטיים). השרת מתנהל מול הנפח כמו מול דיסק מקומי. במערך המרכזי דיסקים רבים בנפחים גדולים, ונתח שמוקצה לשרת נקרא LUN.",["רשת אחסון ייעודית שבה השרת רואה את הנפח כדיסק מקומי; נתח מוקצה נקרא LUN","תיקייה רשתית משותפת דרך TCP/IP","דיסק און קי שמחובר לשרת","שרת אינטרנט"],{v:[["איך נקרא נתח דיסקים שמוקצה לשרת במערך SAN?",["LUN","OU","Scope","GPO"]]]}],
+["s1",8,"כיצד נחליף דיסק בשרת?","מוציאים את הדיסק התקול (לחיצה על כפתור הנעילה ומשיכה); לוקחים דיסק חדש זהה (סוג ונפח); מכניסים במקום הישן ומוודאים נעילה מלאה; הדיסק מסתנכרן עם מערך ה-RAID ומתחיל לפעול אוטומטית. אסור לכבות את השרת בשום שלב!",["מחליפים בזמן שהשרת דולק, בדיסק זהה, והוא מסתנכרן אוטומטית עם ה-RAID","מכבים את השרת, מחליפים ומתקינים מחדש את מערכת ההפעלה","מחליפים בכל דיסק שיש, ללא קשר לנפח","מוציאים את כל הדיסקים ומכניסים אותם מחדש"]],
+["s2",9,"מהו שרת SCCM? מהן יכולותיו?","System Center Configuration Manager — תוכנה של Microsoft לניהול קבוצות גדולות של מחשבים: שליטה מרחוק, ניהול עדכונים, הפצת תוכנות, התקנת מערכת הפעלה מרחוק ואבטחה. יכולות: ניהול נכסים (Asset Management), מלאי חומרה ותוכנה, הפצת תוכנה, עדכוני אבטחה, דוחות, ועזרים לפתרון תקלות מרחוק.",["ניהול מחשבים רבים: הפצת תוכנות, עדכונים, מלאי, דוחות ושליטה מרחוק","שרת לחלוקת כתובות IP","שרת דוא״ל ארגוני","שרת שמנהל טלפונים"]],
+["s2",10,"מהי מכונה וירטואלית?","מחשב ״תוכנתי״ שרץ על גבי שרת פיזי — מאפשר להפעיל מערכת/תוכנה בלי צורך בחומרה פיזית נוספת, בלי להפריע לשאר מה שרץ על השרת.",["מחשב תוכנתי שרץ על שרת פיזי כאילו היה מחשב נפרד","מחשב ישן שהוצא משימוש","שרת בענן בלבד","מחשב ללא מערכת הפעלה"]],
+["s2",11,"מהו HYPERVISOR? הסבר על HYPERVISOR מסוג 1 ומסוג 2.","Hypervisor — תוכנה שמריצה ומנהלת מכונות וירטואליות. Type 1 — רץ ישירות על החומרה, בלי מערכת הפעלה מתחתיו; מתאים לחוות שרתים. Type 2 — רץ בתוך מערכת הפעלה קיימת; מתאים למחשב אישי עם מעט מכונות.",["Type 1 — ישירות על החומרה (לחוות שרתים); Type 2 — בתוך מערכת הפעלה (למחשב אישי)","Type 1 — בתוך מערכת הפעלה; Type 2 — על החומרה","Type 1 — לשרתי Linux; Type 2 — לשרתי Windows","Type 1 — חינמי; Type 2 — בתשלום"],{v:[["איזה סוג Hypervisor מתאים לחוות שרתים עם הרבה תהליכים במקביל?",["Type 1 — רץ ישירות על החומרה","Type 2 — רץ על מערכת הפעלה","שניהם מתאימים באותה מידה","אף אחד מהם"]]]}],
+["s2",12,"מהו CLUSTER?","אשכול: כמה שרתים (וירטואליים) שמוגדרים לעבוד יחד בתיאום כה גבוה שהם נראים כשרת אחד — לצורך שרידות. שרידות תוכנתית: אם מכונה וירטואלית נופלת, משתמשים במכונה אחרת. שרידות חומרתית: אם שרת פיזי נופל, המכונות עוברות לשרת פיזי אחר.",["אשכול שרתים שעובדים יחד כשרת אחד לצורך שרידות","מערך דיסקים","ארון שרתים","סוג של מתג"]],
+["s2",13,"מהי וירטואליזציה? מהם היתרונות והחסרונות?","טכנולוגיה להרצת שרתים לוגיים (וירטואליים) רבים על שרת פיזי אחד, כשכל אחד מתנהג כמחשב נפרד. יתרונות: פחות שרתים פיזיים; חיסכון ברכישה ובחשמל; אי־תלות בין חומרה לתוכנה (אפשר להעביר מכונה בין שרתים); שרידות גבוהה. חסרונות (תוספת, לא בחוברת): כשל בשרת הפיזי משפיע על כל המכונות שעליו אם אין Cluster; המכונות מתחרות על אותם משאבים; נדרשים ידע ורישוי.",["חיסכון בשרתים פיזיים ובחשמל","כל מכונה וירטואלית צריכה שרת פיזי משלה","אי אפשר להעביר מכונה בין שרתים","היא מבטלת את הצורך בגיבוי"],{mq:"מהו יתרון של וירטואליזציה?"}],
+["s3",14,"מהו קובץ? מהי מערכת קבצים?","קובץ — אוסף מידע מאוגד, שמור במקום אחסון, שמערכת ההפעלה או תוכנה יכולות לגשת אליו. מערכת קבצים — קובעת איך המידע נשמר ונשלף: נותנת שם לכל פיסת מידע ומפרידה בין הקבצים, כך שקל לעבוד עם המידע.",["קובץ — מידע מאוגד באחסון; מערכת קבצים — האופן שבו המידע נשמר, נקרא ומופרד","קובץ — תיקייה; מערכת קבצים — דיסק","קובץ — תוכנה; מערכת קבצים — מערכת הפעלה","קובץ — שורת קוד; מערכת קבצים — שרת"]],
+["s3",15,"מה קורה בעת מחיקת קובץ?","הקובץ עובר לסל המחזור. אחרי ריקון הסל נמחקת רק הרשומה (המצביע) של הקובץ בטבלה — המידע עצמו (הביטים) נשאר בדיסק, ולכן אפשר לשחזר אותו.",["נמחק רק המצביע לקובץ; הביטים נשארים ואפשר לשחזר","המידע נמחק פיזית מיד","הקובץ עובר לשרת הגיבוי","הקובץ מוצפן"],{mq:"מה קורה בפועל בדיסק אחרי ריקון סל המחזור?"}],
+["s3",16,"כיצד ניצור תיקייה רשתית משותפת?","הולכים לתיקייה, לוחצים מקש ימני ← Properties ← לשונית Sharing ← Advanced Sharing.",["מקש ימני על התיקייה ← Properties ← Sharing ← Advanced Sharing","Control Panel ← Devices and Printers","Task Manager ← Processes","CMD ← ping"]],
+["s3",17,"כיצד נבצע שחזור תיקיות/קבצים?","נכנסים למיקום שבו הקובץ/התיקייה נשמרו, מקש ימני ← Restore Previous Versions, בוחרים את הגרסה לפי התאריך, והיא משוחזרת עם כל התוכן.",["מקש ימני במיקום ← Restore Previous Versions ← בחירת גרסה לפי תאריך","Device Manager ← Roll Back","פרמוט הדיסק והתקנה מחדש","CMD ← nslookup"]],
+["s3",18,"הסבר על מערכות הקבצים FAT ו-NTFS.","שתיהן טבלאות שמסמנות את המיקום הפיזי של הקבצים בדיסק ומחזיקות מצביעים. FAT — ישנה, מוגבלת בנפח, בלי הרשאות. NTFS — חדשה ומתקדמת; נוספו בה הרשאות (מי יכול לגשת ומה לעשות) ובעלות; בשימוש ברוב המחשבים.",["NTFS תומכת בהרשאות; FAT ישנה ומוגבלת, בלי הרשאות","FAT תומכת בהרשאות; NTFS לא","שתיהן זהות","NTFS מיועדת לדיסק און קי בלבד"],{mq:"מה ההבדל המרכזי בין NTFS ל-FAT?"}],
+["s3",19,"אילו סוגי הרשאות לקובץ/תיקייה קיימים, ומה כל אחד מאפשר?","List Folder Contents — צפייה ברשימת הקבצים והתיקיות (לתיקייה). Read — קריאת תוכן ומאפיינים. Read & Execute — קריאה + הרצת קבצי הרצה. Write — יצירת קבצים ותיקיות ושינוי מאפיינים (בקובץ: כתיבה על קובץ קיים). Modify — כל הקודמות + מחיקה. Full Control — הכל + שינוי הרשאות ולקיחת בעלות.",["Full Control","Modify","Write","Read & Execute"],{mq:"איזו הרשאה מאפשרת גם לשנות את ההרשאות של אחרים ולקחת בעלות?",v:[["איזו הרשאה כוללת קריאה, הרצה, כתיבה ומחיקה — אך לא שינוי הרשאות?",["Modify","Full Control","Read & Execute","List Folder Contents"]]]}],
+["s3",20,"מהם 4 המצבים לכל הרשאה (מהשאלה הקודמת)?","Allow — מתן ההרשאה. Deny — חסימה ללא יוצא מן הכלל, גם אם יש הרשאה מקבוצה אחרת. Copy — העתקת הרשאות של משתמש קיים למשתמש חדש. Default — אם לא הוגדר דבר, אין הרשאה, אלא אם התקבלה מקבוצה שהמשתמש שייך אליה.",["Deny גובר וחוסם את הגישה","Allow גובר כי הוא ניתן קודם","ההרשאה הגבוהה מבין השתיים קובעת","המשתמש מקבל הודעה ובוחר"],{mq:"למשתמש יש Allow מקבוצה אחת ו-Deny מקבוצה אחרת על אותה תיקייה. מה יקרה?",n:"ארבעת המצבים כאן הם כפי שמופיעים בחוברת. בממשק של Windows מופיעים בפועל רק Allow ו-Deny, וחוקי הירושה (Inheritance)."}],
+["s3",21,"כיצד נצפה בהרשאות על תיקייה/קובץ מסוים?","Properties ← לשונית Security: רואים את ההרשאות של כל קבוצה/משתמש. בעזרת משתמש חזק אפשר לשנות אותן שם.",["Properties ← Security","Properties ← Sharing ← Advanced Sharing","Task Manager ← Users","Device Manager ← Properties"]],
+["s3",22,"מהי דיפרגמנטציה, וכיצד נבצע אותה?","איחוי: ארגון המידע בדיסק ברצף. עבודה עם הדיסק (שמירה, מחיקה, עריכה) יוצרת ״חורים״ ופיצול, שמאטים את התוכנות. ביצוע: מקש ימני על הדיסק ← Properties ← Tools ← Optimize/Defragment. לא מבצעים דיפרגמנטציה על SSD.",["סידור קבצים מפוצלים ברצף; Properties ← Tools; לא על SSD","מחיקת קבצים כפולים; רק על SSD","הצפנת הדיסק; דרך BIOS","חלוקת הדיסק למחיצות; דרך CMD"],{v:[["על איזה סוג כונן לא מבצעים דיפרגמנטציה?",["SSD","HDD","דיסק חיצוני מכני","מערך RAID של דיסקים מכניים"]]]}],
+["s3",23,"מהי DISK QUOTA, וכיצד נבצע אותה?","הקצאה והגבלה של מקום בדיסק לכל משתמש — כדי להתאים את המקום לפי המשתמשים ולמנוע שימוש ללא הגבלה. ביצוע: Properties של הדיסק ← לשונית Quota.",["הגבלת נפח הדיסק לכל משתמש; Properties ← Quota","גיבוי הדיסק לענן","בדיקת שגיאות בדיסק","מחיקת קבצים זמניים"]],
+["s4",24,"מהו שרת WEB?","שרת שמציג דפי HTML (עיצוב דפי אינטרנט), תמונות וקבצים באינטרנט; מאפשר לאפליקציות לפעול בפורטים שלהן ואחראי על אופן העברת המידע (TCP/UDP). יכול גם להצפין את הדף ב-HTTPS.",["שרת שמגיש דפי אינטרנט, תמונות וקבצים לדפדפנים","שרת שמחלק כתובות IP","שרת לניהול משתמשים","שרת שמנהל טלפונים"]],
+["s4",25,"מהי תוכנת IIS?","Internet Information Services — תוכנת שרת WEB של Microsoft, פועלת בעיקר ב-Windows ועונה לבקשות מהדפדפן.",["שרת ה-WEB של Microsoft ל-Windows","אנטי־וירוס","מערכת קבצים","שרת DHCP של Cisco"]],
+["s5",26,"מהו DOMAIN?","יחידת ניהול ארגונית לניהול רשת המחשבים והמשתמשים. בנוסף, דומיין יכול להיות שם ייחודי של אתר באינטרנט או כתובת דוא״ל.",["יחידת ניהול ארגונית של מחשבים ומשתמשים (וגם שם אתר)","סוג של כבל רשת","תיקייה משותפת","שרת גיבוי"]],
+["s5",27,"מהו SUB-DOMAIN?","דומיין תחת דומיין ראשי — יחידה ארגונית בתוך אותו דומיין.",["דומיין שנמצא תחת דומיין ראשי","דומיין שאינו מחובר לאינטרנט","דומיין זמני לבדיקות","שם אחר ל-OU"]],
+["s5",28,"מהו שרת ה-DC (DOMAIN CONTROLLER)?","שרת שמאחסן את כל מסד הנתונים של הדומיין ומספק שירות אימות: כל הזדהות לדומיין נבדקת מולו. ככל שיש יותר DC — האימות מהיר יותר. ה-DC יכולים להיות זהים (לשרידות) או לחלק ביניהם תפקידים (לחלוקת עומס).",["שרת שמחזיק את מסד הנתונים של הדומיין ומאמת משתמשים","שרת שמחלק כתובות IP","שרת אינטרנט","מתג ליבה"]],
+["s5",29,"מהו DOMAIN NAMESPACE?","שיטה למתן שמות שמספקת את המבנה ההיררכי של נתוני ה-DNS. כל נקודה (.) מייצגת הפרדה בין רמות; הצמתים נקראים Domain.",["המבנה ההיררכי של שמות ב-DNS, שבו נקודה מפרידה בין רמות","רשימת המשתמשים בדומיין","כתובת ה-IP של ה-DC","שם המחשב ברשת"]],
+["s5",30,"מהו ROOT DOMAIN?","הדומיין שבראש המבנה ההיררכי, מיוצג על ידי נקודה (.), ומנוהל ע״י כמה ארגונים עולמיים.",["ראש ההיררכיה, מיוצג בנקודה (.) ומנוהל ע״י ארגונים עולמיים","הדומיין הראשון שנוצר בארגון","הדומיין של מנהל הרשת","דומיין עם הרשאות Full Control"]],
+["s5",31,"מהי מערכת ה-Active Directory?","כלי שמספק ניהול, סדר וארגון לדומיין: קטלוג מרכזי שבו נשמרים כל האובייקטים בדומיין, שמקל על חיפוש ומאפשר לנהל את כל הרשת ממקום אחד. המבנה היררכי.",["קטלוג מרכזי של אובייקטי הדומיין לניהול הרשת ממקום אחד","מערכת קבצים של Windows","תוכנת אנטי־וירוס","שרת להתקנת מערכות הפעלה"]],
+["s5",32,"מהו Organization Unit ב-AD?","יחידה ארגונית: ה-AD מורכב מ-OU שונות, וכל אחת מכילה אובייקטים — לסדר וארגון. ההרשאות והמדיניות ניתנות ל-OU ולא לכל אובייקט בנפרד.",["יחידה ארגונית ב-AD שמכילה אובייקטים ומקבלת הרשאות ומדיניות כקבוצה","שרת ראשי בדומיין","סוג של הרשאה","תיקייה רשתית"]],
+["s5",33,"מהו עץ? מהו יער?","עץ — אוסף דומיינים שחולקים מרחב שמות (namespace) משותף. הדומיין הראשון הוא ״דומיין האב״ (root/parent), ודומיין שנוסף הוא child/sub domain, ושמו ממשיך את שם האב. יער — המבנה הגבוה ביותר שמאגד את כל העצים והדומיינים של הארגון.",["עץ — דומיינים עם מרחב שמות משותף; יער — המבנה העליון שמאגד עצים","עץ — רשימת תיקיות; יער — רשימת דיסקים","עץ — OU אחת; יער — כמה OU","עץ ויער הם שמות לאותו דבר"],{n:"בחוברת היער מוגדר כ״העץ הגבוה ביותר״. מדויק יותר: יער הוא אוסף של עץ אחד או יותר, שחולקים סכמה וקטלוג משותפים."}],
+["s5",34,"מהו GPO (Group Policy Object)?","מנגנון לניהול מרוכז של מדיניות הרשאות ברשת: קובע הגבלות ואפשרויות שימוש במחשב (למשל מניעת שינוי השעון או הגדרות). במקום להגדיר לכל מחשב, מגדירים מדיניות לכל OU.",["ניהול מרוכז של מדיניות והגבלות למחשבים ומשתמשים לפי OU","גיבוי של מסד נתוני הדומיין","פרוטוקול להצפנת סיסמאות","שרת שמחלק כתובות"],{v:[["רוצים למנוע מכל המשתמשים ב-OU מסוים לשנות את שעון המחשב. באיזה כלי נשתמש?",["GPO","DHCP Scope","Disk Quota","Task Manager"]]]}],
+["s5",35,"מהו שרת ה-DNS?","Domain Name System — שרת שממיר שמות דומיין לכתובות IP ולהפך, כי ציודי הרשת לא מכירים שמות אתרים.",["שרת שממיר שמות דומיין לכתובות IP ולהפך","שרת שמחלק כתובות IP","שרת שמאמת משתמשים","שרת שמגיש דפי אינטרנט"]],
+["s5",36,"מהו TLD (Top Level Domain)? מהו SLD (Second Level Domain)?","TLD — סיומת האינטרנט העליונה (למשל ‎.com, ‎.il, ‎.org), מחולקת לפי סוג הארגון או מיקום גיאוגרפי. SLD — הסיומת המשנית, בדרך כלל שם הארגון שעל שמו רשום התחום.",["TLD — הסיומת העליונה (‎.com, ‎.il); SLD — הרמה שמתחתיה, שם הארגון","TLD — שם הארגון; SLD — הסיומת","TLD — דומיין פנימי; SLD — דומיין חיצוני","TLD — שרת DHCP; SLD — שרת DNS"],{v:[["בכתובת google.com, מהו ה-TLD?",["com","google","google.com","www"]]]}],
+["s6",37,"מהו שרת DHCP?","שרת שאחראי על חלוקה דינמית של כתובות IP ברשת. בדרך כלל מספק גם Subnet Mask, Default Gateway וכתובת שרת DNS — כל מה שהמחשב צריך כדי לתפקד ברשת.",["שרת שמחלק כתובות IP ופרטי רשת (מסיכה, שער, DNS)","שרת שממיר שמות לכתובות","שרת שמאמת משתמשים","שרת שמגיש דפי אינטרנט"]],
+["s6",38,"הסבר על 3 שיטות הקצאת הכתובות של השרת.","ידנית — מנהל הרשת מחזיק בשרת טבלה של כתובות MAC וה-IP שיוקצה לכל אחת. אוטומטית — מגדירים לשרת תחום כתובות, וכל מכשיר מבקש כתובת מהתחום. דינמית — כמו אוטומטית, אך הכתובת מוקצית לזמן מוגבל; אם לא מחדשים, היא חוזרת למאגר ותוקצה למחשב אחר.",["דינמית — כמו אוטומטית, אך הכתובת מוקצית לזמן מוגבל וחוזרת למאגר","ידנית — השרת בוחר כתובת אקראית","אוטומטית — מנהל הרשת מגדיר כל כתובת בטבלה","דינמית — הכתובת קבועה לעולם"],{mq:"מה מאפיין את שיטת ההקצאה הדינמית ב-DHCP?",v:[["באיזו שיטת הקצאה מנהל הרשת מחזיק טבלה של כתובות MAC וה-IP שיוקצה לכל אחת?",["ידנית","אוטומטית","דינמית","APIPA"]]]}],
+["s6",39,"מהו DHCP SCOPE?","מאגר כתובות ה-IP של שרת ה-DHCP. בכל פעם שמחשב חדש מתחבר, השרת בודק במאגר אילו כתובות תפוסות ואילו פנויות.",["מאגר הכתובות שהשרת מחלק ממנו","זמן החכירה של כתובת","הודעת ה-Broadcast הראשונה","טווח הכתובות של APIPA"]],
+["s6",40,"הסבר על אופן פעולת השרת (DORA).","Discover — הלקוח שולח Broadcast לאיתור שרת DHCP. Offer — השרתים שולחים הצעה עם הכתובות (IP, מסיכה, שער) וכתובת השרת; נבחרת ההצעה הראשונה. Request — הלקוח שולח Broadcast עם הנתונים שבחר, כדי שגם שאר השרתים ידעו שהצעתם נדחתה. Acknowledge — השרת מאשר, והמחשב מתחיל להשתמש בכתובת.",["Discover ← Offer ← Request ← Acknowledge","Request ← Offer ← Discover ← Acknowledge","Discover ← Request ← Offer ← Acknowledge","Offer ← Discover ← Acknowledge ← Request"],{mq:"מהו הסדר הנכון של שלבי DORA?",v:[["מדוע הודעת ה-Request ב-DORA נשלחת ב-Broadcast?",["כדי שגם שאר שרתי ה-DHCP ידעו שההצעה שלהם לא נבחרה","כי ללקוח כבר יש כתובת IP","כדי לבדוק אם יש התנגשות","כי כך מתחדש ה-Lease"]]]}],
+["s6",41,"מהו LEASE TIME?","זמן החכירה של כתובת שהוקצתה ע״י ה-DHCP: עם קבלת הכתובת מתחילה ספירה לאחור; בסיום הזמן ההתקן מפעיל שוב את DORA ובדרך כלל מקבל את אותה כתובת.",["זמן החכירה של הכתובת; בסופו ההתקן מחדש אותה (לרוב אותה כתובת)","הזמן שלוקח לשרת לענות","הזמן עד שהמחשב נכנס ל-APIPA","זמן החיים של מסגרת ברשת"]],
+["s6",42,"מהו מנגנון APIPA?","אם לקוח לא מקבל כתובת מ-DHCP אחרי זמן מסוים, הוא נכנס ל-APIPA: מקצה לעצמו כתובת אקראית בטווח 169.254.0.1 – 169.254.255.254, וממשיך לשלוח Broadcast כדי למצוא שרת DHCP ולקבל כתובת חוקית.",["כתובת אוטומטית בטווח 169.254.x.x כשאין תשובה משרת DHCP","כתובת שמנהל הרשת מגדיר ידנית","כתובת קבועה של הנתב","כתובת 127.0.0.1 לבדיקת המחשב עצמו"],{v:[["מחשב קיבל כתובת 169.254.12.7. מה הסיבה הסבירה?",["הוא לא קיבל תשובה משרת DHCP (APIPA)","הוא קיבל כתובת תקינה מה-DHCP","הוגדרה לו כתובת סטטית","שרת ה-DNS לא זמין"]]]}],
+["s7",43,"מהי תוכנת McAfee? מהו McAfee Agent?","McAfee — תוכנה לאיתור וירוסים וקוד זדוני והגנה מפניהם; אוספת מידע מכ-100 מיליון עמדות ב-120 מדינות, כדי לזהות פוגענים ברמה עולמית. McAfee Agent — סוכן שמותקן בעמדת הקצה, יוצר קשר עם שרת ה-ePO ומנהל את התוכנה.",["McAfee — אנטי־וירוס; Agent — סוכן בעמדה שמתקשר עם שרת ה-ePO","McAfee — מערכת NAC; Agent — מתג","McAfee — שרת DHCP; Agent — לקוח DHCP","McAfee — חומת אש; Agent — נתב"]],
+["s7",44,"מהו שרת ה-ePO?","שרת מרכזי שדרכו מנוהלת תוכנת McAfee בעמדות הקצה השונות.",["שרת מרכזי לניהול McAfee בעמדות הקצה","שרת להתקנת מערכות הפעלה","שרת טלפוניה","שרת שמחלק כתובות"]],
+["s7",45,"מהי מערכת NAC?","מערכת שמזהה מחשבים ומשתמשים (כולל כאלה עם תוכנות זדוניות) שמנסים להתחבר לרשת, וחוסמת אותם — שליטה מלאה ברשת בלי התערבות של מנהל המערכת.",["מערכת שמזהה מי מנסה להתחבר לרשת וחוסמת גורמים לא מורשים","אנטי־וירוס לשרתים","מערכת לגיבוי","מערכת לניהול טלפונים"]],
+["s7",46,"מהי תוכנת PORTNOX?","כלי שמשמש את מערכת ה-NAC לזיהוי, אימות ובקרת רכיבי רשת. בשונה מ-McAfee, אינו צריך Agent — ולכן פשוט וקל לשימוש.",["כלי NAC לזיהוי ובקרת רכיבים — ללא צורך ב-Agent","אנטי־וירוס עם Agent","שרת DHCP","מתג עם PoE"],{v:[["מה מבדיל את Portnox מ-McAfee מבחינת ההתקנה בעמדות?",["Portnox לא צריך Agent בעמדה","Portnox צריך שני Agents","רק Portnox מותקן על שרת","אין הבדל"]]]}]
+);
+
+
+
+const CH_ORDER=["c","p","t","m","s"];
+const CH={c:"תקשורת",p:"Packet Tracer",t:"תקשורת IT",m:"מחשוב",s:"שרתים"};
+const SUB={c1:"מערך התקשוב וההכשרה",c2:"עקרונות תקשורת",c3:"מודל OSI ו-TCP/IP",c4:"כבלים ומחברים",c5:"רעש וסיבים אופטיים",c6:"טופולוגיות ותשתית",c7:"Ethernet ומיתוג",c8:"VLAN",c9:"STP",c10:"ניתוב ו-ARP",c11:"פרוטוקולים ושירותים",
+p1:"גישה למתג ורמות הרשאה",p2:"הגדרות בסיס וסיסמאות",p3:"פקודות show",p4:"ממשקים, VLAN ו-EtherChannel",
+t1:"ציוד בדיקה ו-CDP",t2:"ארון תקשורת ונהלים",t3:"גישה מרחוק ומש״ל",t4:"טלפוניית IP — שרתים ופרוטוקולים",t5:"חיבור טלפון והקמת שיחה",t6:"VC ואפליקציות",
+m1:"מבנה המחשב ולוח האם",m2:"כרטיסי הרחבה",m3:"מעבד",m4:"זיכרון",m5:"אחסון",m6:"ממשקים וחיבורים",m7:"BIOS, POST ו-CMOS",m8:"תצוגה",m9:"מדפסות",m10:"מערכת הפעלה וכלי Windows",
+s1:"שרתים ואחסון",s2:"ניהול ווירטואליזציה",s3:"קבצים, הרשאות ודיסק",s4:"WEB ו-IIS",s5:"דומיין, AD ו-DNS",s6:"DHCP",s7:"אבטחת עמדות"};
+const SUBS=Object.keys(SUB);
+const Q=B.map(r=>{const [sub,n,q,a,o,x]=r;const e=x||{};const ch=sub[0];return {id:ch+n,ch,sub,n,q,a,o,mq:e.mq||q,note:e.n||"",cli:!!e.cli,v:e.v||[]};});
+const QI={};Q.forEach(x=>QI[x.id]=x);
+const BY_SUB={};Q.forEach(x=>(BY_SUB[x.sub]=BY_SUB[x.sub]||[]).push(x));
+const EXAM_N=40, OPEN_SHARE=0.3;
+const LETTERS=["א","ב","ג","ד"];
+
+/* ---------- storage ---------- */
+const KEY="tkn-exam-v1";
+function def(){return {set:{fb:"now",mix:"mixed"},hist:[],st:{},cur:null,no:1};}
+function load(){try{const r=localStorage.getItem(KEY);if(r){return Object.assign(def(),JSON.parse(r));}}catch(e){}return def();}
+let S=load();
+let saveT=null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function saveSoon(){clearTimeout(saveT);saveT=setTimeout(save,400);}
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function md(s){
+  const lines=esc(s).split(/\n/);let out="",list=null;
+  const close=()=>{if(list){out+="</"+list+">";list=null;}};
+  for(let l of lines){
+    l=l.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/^#+\s*/,"");
+    const b=l.match(/^\s*[-•*]\s+(.*)$/), n=l.match(/^\s*\d+[.)]\s+(.*)$/);
+    if(b||n){const t=b?"ul":"ol";if(list!==t){close();out+="<"+t+">";list=t;}out+="<li>"+(b?b[1]:n[1])+"</li>";}
+    else{close();if(l.trim())out+="<p>"+l+"</p>";}
+  }
+  close();return out;
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function wpick(arr,wf){let tot=0;const ws=arr.map(x=>{const v=Math.max(0.0001,wf(x));tot+=v;return v;});let r=Math.random()*tot;for(let i=0;i<arr.length;i++){r-=ws[i];if(r<=0)return arr[i];}return arr[arr.length-1];}
+function lvl(sc){return sc>=0.8?"ok":sc>=0.4?"part":"bad";}
+const LVL_TXT={ok:"נכון",part:"חלקי",bad:"שגוי"};
+function fmtTime(ms){const s=Math.max(0,Math.round(ms/1000));const m=Math.floor(s/60);return m+":"+String(s%60).padStart(2,"0");}
+function fmtDate(t){try{return new Date(t).toLocaleDateString("he-IL",{day:"numeric",month:"numeric",year:"2-digit"})+" "+new Date(t).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});}catch(e){return "";}}
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),2600);}
+function keyBlock(q){return q.cli?'<pre class="cli">'+esc(q.a)+"</pre>":"<p>"+esc(q.a)+"</p>";}
+function optHtml(q,t){return q.cli&&!/[\u0590-\u05FF]/.test(t)?'<span class="cli">'+esc(t)+"</span>":esc(t);}
+function mcOf(it){const q=QI[it.id];if(it.vi>=0&&q.v[it.vi])return {text:q.v[it.vi][0],opts:q.v[it.vi][1]};return {text:q.mq,opts:q.o};}
+function qTextOf(it){return it.f==="mc"?mcOf(it).text:QI[it.id].q;}
+
+/* ---------- state ---------- */
+let view="home";
+let resIdx=0, resFilter="all", openRv=new Set(), bankCh="c", bankQ="", openBank=new Set(), portsOpen=false, grading=null;
+let mini={}, allBars=false, aiTxt={};
+function aiBoxHtml(k){const a=aiTxt[k];if(!a)return "";if(a.busy&&!a.text)return `<div class="aibox"><span class="spin"></span>${esc(a.wait)}</div>`;return `<div class="aibox">${md(a.text||"")}${a.err?`<p class="small">${esc(a.err)}</p>`:""}</div>`;}
+async function aiStream(k,boxId,wait,prompt){
+  if(aiTxt[k]&&aiTxt[k].busy)return;
+  aiTxt[k]={busy:true,text:"",wait};const put=()=>{const b=document.getElementById(boxId);if(b)b.innerHTML=aiBoxHtml(k);};put();
+  try{const r=await sample(prompt,{modelTier:"default",onText:({text})=>{aiTxt[k].text=text;put();}});aiTxt[k].text=r.text;}
+  catch(e){aiTxt[k].text=e&&e.text||"";aiTxt[k].err=aiErr(e)||"";}
+  aiTxt[k].busy=false;put();
+}
+let sync={state:"off",msg:"",err:""};
+
+/* ---------- חיבור לשרת המורה (Apps Script) ---------- */
+// אפשר להדביק כאן את כתובת ה-Web App. אם ריק — הכתובת נלקחת מהקישור (#api=...&code=...)
+const API_URL_DEFAULT="";
+(function readHash(){
+  try{
+    const h=new URLSearchParams(location.hash.slice(1));let ch=false;
+    if(h.get("api")){S.api=h.get("api");ch=true;}
+    if(h.get("code")){S.code=h.get("code");ch=true;}
+    if(h.get("name")&&!S.name){S.name=h.get("name");ch=true;}
+    if(ch){save();history.replaceState(null,"",location.pathname+location.search);}
+  }catch(e){}
+})();
+function apiUrl(){return API_URL_DEFAULT||S.api||"";}
+async function api(body,signal){
+  const url=apiUrl();if(!url||!S.code)throw {code:"not_configured"};
+  let res,j=null;
+  try{res=await fetch(url,{method:"POST",body:JSON.stringify(Object.assign({code:S.code},body)),signal});}
+  catch(e){if(e&&e.name==="AbortError")throw {code:"cancelled"};throw {code:"network"};}
+  try{j=await res.json();}catch(e){throw {code:"network"};}
+  if(!j||!j.ok){const er=j&&j.error;throw {code:er==="bad_code"?"not_granted":er==="daily_limit"?"daily_limit":er==="rate_limited"?"rate_limited":(er||"server"),message:(j&&j.message)||""};}
+  return j;
+}
+function parseLooseJson(t){t=String(t||"").replace(/```(?:json)?/g,"");const a=t.indexOf("{"),b=t.lastIndexOf("}");if(a<0||b<a)throw {code:"bad_json"};try{return JSON.parse(t.slice(a,b+1));}catch(e){throw {code:"bad_json"};}}
+const sample=(()=>{
+  const f=async(input,opts)=>{opts=opts||{};
+    const messages=typeof input==="string"?[{role:"user",content:input}]:input.map(m=>({role:m.role,content:m.content}));
+    const j=await api({action:"ai",messages},opts.signal);
+    if(opts.onText)opts.onText({text:j.text,delta:j.text});
+    return {text:j.text,truncated:!!j.truncated};};
+  f.json=async(input,opts)=>parseLooseJson((await f(input,opts)).text);
+  return f;
+})();
+let ai="checking";
+function aiOn(){return ai==="ready";}
+function aiErr(e){
+  const c=e&&e.code;
+  if(c==="not_granted"){ai="denied";refreshAiChip();return "קוד הגישה שגוי. בקשו מהמורה את הקישור שוב. בינתיים — בדיקה עצמית.";}
+  if(c==="daily_limit")return "המכסה היומית של המורה הדיגיטלי נוצלה. אפשר להמשיך עם בדיקה עצמית, ומחר היא מתחדשת.";
+  if(c==="rate_limited")return "המורה הדיגיטלי עמוס כרגע. חכו כמה שניות ונסו שוב.";
+  if(c==="network")return "אין חיבור לשרת. בדקו את האינטרנט ונסו שוב.";
+  if(c==="cancelled")return "";
+  return "המורה הדיגיטלי לא זמין כרגע. נסו שוב בעוד רגע.";
+}
+function refreshAiChip(){
+  const el=$("#aichip");if(!el)return;
+  const m={checking:["wait","מתחבר למורה הדיגיטלי"],ready:["on","מורה דיגיטלי מחובר"],off:["","מורה דיגיטלי לא מחובר — בדיקה עצמית"],denied:["","קוד גישה שגוי — בדיקה עצמית"]}[ai]||["",""];
+  el.innerHTML='<span class="dot '+m[0]+'"></span>'+m[1];
+}
+async function connect(){
+  if(!apiUrl()||!S.code){ai="off";sync.state="off";refreshAiChip();refreshSync();if(view==="home")render();return false;}
+  ai="checking";refreshAiChip();
+  try{await api({action:"ping"});ai="ready";sync.state="ready";}
+  catch(e){ai=e&&e.code==="not_granted"?"denied":"off";sync.state="off";sync.err=aiErr(e);}
+  refreshAiChip();refreshSync();if(view==="home"||view==="results")render();
+  if(sync.state==="ready")pushReport();
+  return ai==="ready";
+}
+
+const GRADE_RULES=`אתה בודק תשובות במבחן תרגול לקורס טכנאי רשת (רמה בסיסית). השווה את תשובת החניך לתשובת המפתח מהחוברת.
+כללי ניקוד:
+- ציון 0–100 לפי כמה מהנקודות המהותיות בתשובת המפתח מופיעות בתשובת החניך, גם בניסוח אחר, בקיצור או בשילוב עברית ואנגלית.
+- אל תוריד ניקוד על שגיאות כתיב או ניסוח לא מלוטש.
+- אם השאלה מבקשת מספר פריטים (למשל ״3 דרכים״), תן ניקוד יחסי לפריטים הנכונים.
+- אם יש ״הערת דיוק״ — קבל גם את התשובה הנכונה טכנית וגם את תשובת החוברת.
+- בשאלת פקודות (CLI): קבל קיצורים מקובלים (conf t, int fa0/5, sh run, wr), התעלם מהפרומפט (Sw#) ומאותיות גדולות/קטנות. בדוק שהפקודות הנחוצות מופיעות בסדר הגיוני ובמצב הנכון. ערכים לדוגמה (שם, IP, מספר VLAN) יכולים להיות שונים אם השאלה לא קבעה אותם.
+- תשובה ריקה, ״לא יודע״ או לא קשורה = 0. טענה שגויה מהותית מורידה ניקוד.
+verdict: ״נכון״ מ-80, ״חלקי״ 40–79, ״שגוי״ מתחת ל-40.
+feedback: 1–3 משפטים בעברית, בגוף שני וניטרלי מגדרית ככל האפשר (למשל ״כדאי להוסיף…״), ענייני ומעודד.
+missing: עד 3 נקודות חסרות או שגויות, קצרות. מערך ריק אם אין.`;
+async function aiGrade(it){
+  const q=QI[it.id];
+  const prompt=GRADE_RULES+`
+החזר JSON בלבד בפורמט: {"score":0,"verdict":"נכון|חלקי|שגוי","feedback":"","missing":[]}
+
+שאלה: ${q.q}
+תשובת המפתח: ${q.a}${q.note?"\nהערת דיוק: "+q.note:""}${q.cli?"\n(שאלת פקודות CLI)":""}
+תשובת החניך: ${it.a}`;
+  const r=await sample.json(prompt,{modelTier:"quick"});
+  return normGrade(r);
+}
+function normGrade(r){
+  let sc=Number(r&&r.score);if(!isFinite(sc))throw {code:"bad_json"};sc=Math.max(0,Math.min(100,sc));
+  return {sc:sc/100,fb:String(r.feedback||""),miss:Array.isArray(r.missing)?r.missing.slice(0,3).map(String):[],by:"ai"};
+}
+async function aiGradeBatch(items,onProg){
+  for(let i=0;i<items.length;i+=6){
+    const chunk=items.slice(i,i+6);
+    const body=chunk.map((it,k)=>{const q=QI[it.id];return `### פריט ${k+1}${q.cli?" (שאלת פקודות CLI)":""}
+שאלה: ${q.q}
+תשובת המפתח: ${q.a}${q.note?"\nהערת דיוק: "+q.note:""}
+תשובת החניך: ${it.a}`;}).join("\n\n");
+    const prompt=GRADE_RULES+`
+בדוק כל פריט בנפרד. החזר JSON בלבד בפורמט: {"results":[{"item":1,"score":0,"verdict":"","feedback":"","missing":[]}]}
+
+`+body;
+    const r=await sample.json(prompt,{modelTier:"quick"});
+    const arr=(r&&r.results)||[];
+    chunk.forEach((it,k)=>{const g=arr.find(x=>Number(x.item)===k+1)||arr[k];if(g){try{it.r=normGrade(g);}catch(e){}}});
+    onProg(Math.min(items.length,i+chunk.length),items.length);
+  }
+}
+
+/* ---------- exam building ---------- */
+function itemW(q){const s=S.st[q.id];if(!s)return 1.6;return (s.l==="bad"?2.4:s.l==="part"?1.7:0.5)/(1+0.25*s.s);}
+function subErr(sub){let s=0,c=0;BY_SUB[sub].forEach(q=>{const t=S.st[q.id];if(t){s+=t.s;c+=t.c;}});return s?1-c/s:0.5;}
+function pick(kind,sub){
+  let chosen=[];
+  if(kind==="exam"){
+    const set=new Set();
+    SUBS.forEach(su=>set.add(wpick(BY_SUB[su],itemW)));
+    let guard=0;
+    while(set.size<EXAM_N&&guard++<500){const su=wpick(SUBS,x=>BY_SUB[x].length);const pool=BY_SUB[su].filter(q=>!set.has(q));if(pool.length)set.add(wpick(pool,itemW));}
+    chosen=[...set];
+  }else if(kind==="boost"){
+    const errs={};SUBS.forEach(su=>errs[su]=subErr(su));
+    let pool=Q.slice();
+    const w=q=>{const s=S.st[q.id];const base=!s?1.2:s.l==="bad"?5:s.l==="part"?3.5:0.35;return base*(0.6+errs[q.sub]*1.4);};
+    while(chosen.length<EXAM_N&&pool.length){const q=wpick(pool,w);chosen.push(q);pool=pool.filter(x=>x!==q);}
+  }else{
+    chosen=shuffle(BY_SUB[sub]).slice(0,12);
+  }
+  return chosen.sort((a,b)=>CH_ORDER.indexOf(a.ch)-CH_ORDER.indexOf(b.ch)||a.n-b.n);
+}
+function startExam(kind,sub){
+  const qs=pick(kind,sub);
+  const mix=S.set.mix;
+  let fmts=qs.map(()=>mix==="open"?"open":"mc");
+  if(mix==="mixed"){const k=Math.round(qs.length*OPEN_SHARE);shuffle(qs.map((_,i)=>i)).slice(0,k).forEach(i=>fmts[i]="open");}
+  const items=qs.map((q,i)=>({id:q.id,f:fmts[i],vi:fmts[i]==="mc"?Math.floor(Math.random()*(q.v.length+1))-1:-1,ord:shuffle([0,1,2,3]),a:null,r:null}));
+  S.cur={no:kind==="practice"?null:S.no++,kind,sub:sub||null,fb:kind==="practice"?"now":S.set.fb,mix,start:Date.now(),idx:0,items};
+  save();view="exam";portsOpen=window.innerWidth>=640;render();window.scrollTo(0,0);
+}
+
+/* ---------- stats ---------- */
+function countItem(it){
+  if(!it.r||it.counted)return;
+  const s=S.st[it.id]||{s:0,c:0,l:null};
+  s.s++;const L=lvl(it.r.sc);if(L==="ok")s.c++;s.l=L;S.st[it.id]=s;it.counted=true;
+}
+function examScore(E){const n=E.items.length;let sum=0,pend=0;E.items.forEach(it=>{if(it.r)sum+=it.r.sc;else pend++;});return {score:Math.round(sum/n*1000)/10,pend};}
+
+
+/* ---------- views ---------- */
+function topBar(){
+  return `<div class="top"><div class="brand"><h1>מבחני תרגול — טכנאי רשת</h1><span class="ver" title="גרסת המערכת">גרסה ${VERSION}</span></div><span class="row" style="gap:4px 14px"><span class="ai-chip" id="syncchip"></span><span class="ai-chip" id="aichip"></span></span></div>
+  <div class="notice"><div><strong>נכתב בסיוע בינה מלאכותית.</strong> השאלות וההסברים מבוססים על ״חוברת שאלות לתרגול — טכנאי רשת״. במקומות שבהם החוברת אינה מדויקת טכנית מופיעה ״הערת דיוק״. בכל סתירה — החוברת והמדריך קובעים.</div></div>`;
+}
+function lOf(m,id){const v=m[id];return v?(typeof v==="string"?v:v.l)||"":"";}
+function panelHtml(m,who){
+  m=m||S.st;
+  const rows=CH_ORDER.map(ch=>{
+    const qs=Q.filter(q=>q.ch===ch);const ok=qs.filter(q=>lOf(m,q.id)==="ok").length;
+    const leds=qs.map(q=>`<button class="led ${lOf(m,q.id)}" data-act="ledgo" data-id="${q.id}" title="${esc(CH[ch])} ${q.n}" aria-label="${esc(CH[ch])} שאלה ${q.n}"></button>`).join("");
+    return `<div class="prow"><span class="tagl">${esc(CH[ch])}<small>${ok}/${qs.length}</small></span><div class="leds">${leds}</div></div>`;
+  }).join("");
+  const ok=Q.filter(q=>lOf(m,q.id)==="ok").length;const seen=Q.filter(q=>lOf(m,q.id)).length;
+  return `<section class="panel" aria-label="מפת החוברת"><div class="panel-head"><h2>${ok} מתוך ${Q.length} שאלות החוברת ${who?"בשליטה אצל "+esc(who):"בשליטה"}</h2><span class="big">${seen} כבר הופיעו במבחנים, ${Q.length-seen} עוד לא</span></div>${rows}
+  <div class="legend"><span><i style="background:var(--led-ok)"></i>נענתה נכון בפעם האחרונה</span><span><i style="background:var(--led-part)"></i>חלקית</span><span><i style="background:var(--led-bad)"></i>שגויה</span><span><i style="background:var(--led-off)"></i>עוד לא הופיעה</span></div></section>`;
+}
+function vHome(){
+  const st=S.set;
+  const hasHist=S.hist.some(h=>h.kind!=="practice");
+  let resume="";
+  if(S.cur){const E=S.cur;const done=E.items.filter(it=>it.a!=null&&it.a!=="").length;
+    resume=`<div class="card resume"><h3>${E.kind==="practice"?"תרגול נושא בתהליך":"מבחן בתהליך"}</h3><p>${E.kind==="practice"?esc(SUB[E.sub]):"מבחן מס׳ "+E.no}: נענו ${done} מתוך ${E.items.length} שאלות.</p><div class="row"><button class="btn primary" data-act="resume">המשך מאיפה שעצרת</button><button class="btn ghost" data-act="discard">מחיקת המבחן</button></div></div>`;}
+  return topBar()+`<main class="wrap">${panelHtml()}${resume}${sync.state!=="ready"?connectCard():""}
+  <div class="card"><h3>מבחן חדש — ${EXAM_N} שאלות</h3>
+    <p class="muted small">כל מבחן מכסה את כל 38 הנושאים בחוברת, ונבנה מחדש בכל פעם. שאלות שעוד לא הופיעו או שטעית בהן מקבלות עדיפות.</p>
+    <div class="field"><span>מתי לקבל משוב</span><div class="seg" role="group" aria-label="מתי לקבל משוב"><button data-act="set" data-k="fb" data-v="now" aria-pressed="${st.fb==="now"}">אחרי כל שאלה</button><button data-act="set" data-k="fb" data-v="end" aria-pressed="${st.fb==="end"}">רק בסוף המבחן</button></div></div>
+    <div class="field"><span>סוג השאלות</span><div class="seg" role="group" aria-label="סוג השאלות"><button data-act="set" data-k="mix" data-v="mixed" aria-pressed="${st.mix==="mixed"}">משולב</button><button data-act="set" data-k="mix" data-v="mc" aria-pressed="${st.mix==="mc"}">אמריקאיות</button><button data-act="set" data-k="mix" data-v="open" aria-pressed="${st.mix==="open"}">פתוחות</button></div></div>
+    <p class="muted small">${st.mix==="mc"?"כל השאלות אמריקאיות, נבדקות מיד.":st.mix==="open"?"כל השאלות פתוחות — כותבים תשובה מלאה, כמו במבחן בעל־פה."+(aiOn()?" הבינה המלאכותית בודקת ומסבירה.":" בלי חיבור ל-AI תשווה/י בעצמך מול תשובת המפתח."):"כ-70% אמריקאיות וכ-30% פתוחות."+(aiOn()?" הפתוחות נבדקות בבינה מלאכותית.":" את הפתוחות בודקים מול תשובת המפתח.")}</p>
+    <div class="row"><button class="btn primary" data-act="new" data-kind="exam">התחלת מבחן חדש</button><button class="btn" data-act="new" data-kind="boost" ${hasHist?"":"disabled"} title="${hasHist?"":"זמין אחרי המבחן הראשון"}">מבחן חיזוק לנקודות החלשות</button></div>
+  </div>
+  ${sync.state==="ready"?connectCard():""}
+  <div class="navlist"><button class="btn" data-act="go" data-v="bank">מאגר השאלות ותרגול לפי נושא</button><button class="btn" data-act="tutor-free" ${aiOn()?"":"disabled"}>שאלה חופשית למורה</button><button class="btn" data-act="go" data-v="hist">היסטוריה והתקדמות</button></div>
+  ${footer()}</main>`;
+}
+function footer(){return `<div class="foot">גרסה ${VERSION}. המערכת נכתבה בסיוע בינה מלאכותית, על בסיס ״חוברת שאלות לתרגול — טכנאי רשת״ (בלמ״ס) מאת סמ״ר ליעד לנדמן וסמל דניאל דוברובסקי. ${sync.state==="ready"?"ההתקדמות נשמרת בדפדפן, והציונים נשלחים גם למורה.":"ההתקדמות נשמרת בדפדפן זה."}</div>`;}
+
+function itemState(it){if(it.r)return lvl(it.r.sc);if(it.a!=null&&it.a!=="")return "ans";return "";}
+function vExam(){
+  const E=S.cur;const it=E.items[E.idx];const q=QI[it.id];const N=E.items.length;
+  const now=E.fb==="now";const checked=!!it.r||it.self;
+  const strip=E.items.map((x,i)=>`<span class="${itemState(x)}${i===E.idx?" cur":""}"></span>`).join("");
+  const ports=E.items.map((x,i)=>`<button class="port ${itemState(x)}${i===E.idx?" cur":""}" data-act="goq" data-i="${i}" aria-label="שאלה ${i+1}">${i+1}</button>`).join("");
+  let body="";
+  if(it.f==="mc"){
+    const mc=mcOf(it);
+    body=`<p class="qtext">${esc(mc.text)}</p><ul class="opts">`+it.ord.map((oi,di)=>{
+      let cls="";if(it.a===di)cls="sel";
+      if(now&&it.r){if(oi===0)cls="right";else if(it.a===di)cls="wrong";}
+      return `<li><button class="opt ${cls}" data-act="opt" data-i="${di}" ${now&&it.r?"disabled":""}><span class="k">${LETTERS[di]}</span><span class="t">${optHtml(q,mc.opts[oi])}</span></button></li>`;
+    }).join("")+"</ul>";
+  }else{
+    body=`<p class="qtext">${esc(q.q)}</p><label class="small muted" for="ans">${q.cli?"כתבו את הפקודות, כל פקודה בשורה (אפשר עם הפרומפט, למשל Sw#)":"כתבו תשובה מלאה במילים שלכם"}</label>
+    <textarea id="ans" class="${q.cli?"cli":""}" ${q.cli?'dir="ltr" spellcheck="false" autocapitalize="off" autocomplete="off"':""} ${now&&checked?"readonly":""}>${esc(it.a||"")}</textarea>`;
+  }
+  let fb="";
+  if(now&&it.busy){fb=`<div class="fb" aria-live="polite"><span class="spin"></span>המורה הדיגיטלי בודק את התשובה…</div>`;}
+  else if(now&&(it.r||it.self))fb=feedbackHtml(it,true);
+  const last=E.idx===N-1;
+  let primary="";
+  if(now){
+    if(!checked&&!it.busy)primary=`<button class="btn primary" data-act="check">בדיקת התשובה</button>`;
+    else if(!it.busy)primary=last?`<button class="btn primary" data-act="finish">סיום וקבלת ציון</button>`:`<button class="btn primary" data-act="next">לשאלה הבאה</button>`;
+  }else{
+    primary=last?`<button class="btn primary" data-act="finish">סיום והגשה</button>`:`<button class="btn primary" data-act="next">שמירה והמשך</button>`;
+  }
+  const title=E.kind==="practice"?"תרגול: "+esc(SUB[E.sub]):E.kind==="boost"?"מבחן חיזוק מס׳ "+E.no:"מבחן מס׳ "+E.no;
+  return `<header class="ehead"><div class="ehead-in"><div><div class="ttl">${title}</div><div class="meta">שאלה ${E.idx+1}/${N} <span id="timer">${fmtTime(Date.now()-E.start)}</span> ${now?"משוב מיידי":"משוב בסוף"}</div></div><div class="row"><button class="btn sm ghost" data-act="home">יציאה</button><button class="btn sm" data-act="finish">${now?"סיום":"הגשה"}</button></div></div>
+  <div class="strip" style="--n:${N}">${strip}</div></header>
+  <main class="wrap"><div class="row" style="justify-content:space-between"><button class="link small" data-act="ports">${portsOpen?"הסתרת לוח השאלות":"הצגת לוח השאלות"}</button><span class="small muted">${E.items.filter(x=>x.a!=null&&x.a!=="").length} נענו</span></div>
+  ${portsOpen?`<nav class="ports" aria-label="לוח השאלות">${ports}</nav>`:""}
+  <article class="card" style="margin-top:12px"><div class="qmeta"><span class="ch">${esc(CH[q.ch])}</span><span>${esc(SUB[q.sub])}</span><span>שאלה ${q.n} בחוברת</span><span>${it.f==="mc"?"אמריקאית":"פתוחה"}</span></div>${body}${fb}
+  <div class="actions"><div class="row"><button class="btn sm ghost" data-act="prev" ${E.idx===0?"disabled":""}>הקודמת</button>${!last?`<button class="btn sm ghost" data-act="skip">דילוג</button>`:""}</div><div class="row">${now&&checked&&aiOn()?`<button class="btn sm" data-act="tutor-q">שאלה למורה</button>`:""}${primary}</div></div></article>
+  </main>`;
+}
+function feedbackHtml(it,live){
+  const q=QI[it.id];
+  if(it.self&&!it.r){
+    return `<div class="fb" ${live?'aria-live="polite"':""}><h4>השוו לתשובת המפתח</h4>${it.aiMsg?`<p class="small">${esc(it.aiMsg)}</p>`:""}<div class="lbl">תשובת המפתח מהחוברת</div>${keyBlock(q)}${q.note?`<div class="note"><b>הערת דיוק</b>${esc(q.note)}</div>`:""}<div class="lbl">כמה מהנקודות האלה הופיעו בתשובה שלך?</div><div class="selfgrade"><button class="btn sm" data-act="self" data-v="1">כמעט הכל — נכון</button><button class="btn sm" data-act="self" data-v="0.5">חלק — חלקי</button><button class="btn sm" data-act="self" data-v="0">מעט או כלום — שגוי</button></div></div>`;
+  }
+  const L=lvl(it.r.sc);let head="";
+  if(it.f==="mc"){head=L==="ok"?"נכון!":"לא נכון";if(it.a==null)head="לא נבחרה תשובה";}
+  else head=LVL_TXT[L]+" — "+Math.round(it.r.sc*100)+"/100"+(it.r.by==="self"?" (בדיקה עצמית)":"");
+  let extra="";
+  if(it.f==="mc"&&L!=="ok"){const mc=mcOf(it);extra=`<div class="lbl">התשובה הנכונה</div><p>${optHtml(q,mc.opts[0])}</p>`;}
+  if(it.r.fb)extra+=`<div class="lbl">משוב</div><p>${esc(it.r.fb)}</p>`;
+  if(it.r.miss&&it.r.miss.length)extra+=`<div class="lbl">מה חסר</div><ul>${it.r.miss.map(m=>"<li>"+esc(m)+"</li>").join("")}</ul>`;
+  return `<div class="fb ${L}" ${live?'aria-live="polite"':""}><h4>${head}</h4>${extra}<div class="lbl">${it.f==="mc"?"ההסבר המלא מהחוברת":"תשובת המפתח מהחוברת"}</div>${keyBlock(q)}${q.note?`<div class="note"><b>הערת דיוק</b>${esc(q.note)}</div>`:""}</div>`;
+}
+
+function vGrading(){
+  return topBar()+`<main class="wrap"><div class="card"><h3>בודקים את המבחן</h3><p><span class="spin"></span>${grading?`המורה הדיגיטלי בודק את התשובות הפתוחות: ${grading[0]} מתוך ${grading[1]}`:"מחשבים ציון…"}</p><p class="muted small">זה לוקח בדרך כלל פחות מדקה.</p></div></main>`;
+}
+
+function vResults(){
+  const E=S.hist[resIdx];if(!E){view="home";return vHome();}
+  const {score,pend}=examScore(E);const N=E.items.length;
+  const cnt={ok:0,part:0,bad:0};E.items.forEach(it=>{if(it.r)cnt[lvl(it.r.sc)]++;});
+  const bySub={};E.items.forEach(it=>{const q=QI[it.id];const b=bySub[q.sub]=bySub[q.sub]||{n:0,s:0,p:0};b.n++;if(it.r)b.s+=it.r.sc;else b.p++;});
+  const subRows=Object.keys(bySub).sort((a,b)=>(bySub[a].s/bySub[a].n)-(bySub[b].s/bySub[b].n));
+  const shown=allBars?subRows:subRows.slice(0,10);
+  const bars=shown.map(su=>{const b=bySub[su];const pct=Math.round(b.s/b.n*100);return `<div class="bar ${pct<60?"weak":""}"><span>${esc(SUB[su])}</span><span class="track"><span class="fill" style="display:block;width:${pct}%"></span></span><span class="pct">${pct}%</span></div>`;}).join("");
+  const title=E.kind==="practice"?"תרגול: "+esc(SUB[E.sub]):E.kind==="boost"?"מבחן חיזוק מס׳ "+E.no:"מבחן מס׳ "+E.no;
+  const list=E.items.map((it,i)=>({it,i})).filter(({it})=>resFilter==="all"?true:resFilter==="wrong"?(!it.r||lvl(it.r.sc)!=="ok"):it.f==="open");
+  const rv=list.map(({it,i})=>{const q=QI[it.id];const st=it.r?lvl(it.r.sc):"pend";const open=openRv.has(i);
+    return `<div class="rv"><button data-act="rv" data-i="${i}" aria-expanded="${open}"><span class="num">${i+1}</span><span class="st ${st}" title="${it.r?LVL_TXT[st]:"ממתינה לבדיקה"}"></span><span style="flex:1">${esc(qTextOf(it))}<span class="small muted" style="display:block">${esc(CH[q.ch])}, ${esc(SUB[q.sub])}, שאלה ${q.n} בחוברת${it.r?"":" — ממתינה לבדיקה"}</span></span></button>${open?`<div class="body">${reviewBody(it,i)}</div>`:""}</div>`;}).join("")||`<p class="muted">אין שאלות בסינון הזה.</p>`;
+  return topBar()+`<main class="wrap">
+  <div class="card"><div class="small muted">${title}, ${fmtDate(E.start)}, ${E.fb==="now"?"משוב מיידי":"משוב בסוף"}, ${E.end?fmtTime(E.end-E.start):""}</div>
+  <div class="score"><span class="n">${score}</span><span class="of">מתוך 100</span></div>
+  <p>${cnt.ok} נכונות, ${cnt.part} חלקיות, ${cnt.bad} שגויות${pend?`. <strong>${pend} שאלות פתוחות ממתינות לבדיקה עצמית</strong> — הציון יתעדכן אחריה`:""}.</p>
+  <div class="row"><button class="btn primary" data-act="new" data-kind="exam">מבחן חדש</button><button class="btn" data-act="new" data-kind="boost">מבחן חיזוק</button><button class="btn ghost" data-act="home">לדף הבית</button></div></div>
+  <div class="card"><h3>לפי נושא</h3><p class="small muted">${allBars?"כל הנושאים במבחן, מהחלש לחזק.":"10 הנושאים החלשים במבחן הזה."}</p><div class="bars">${bars}</div>${subRows.length>10?`<button class="link small" data-act="bars" style="margin-top:8px">${allBars?"הצגת 10 החלשים בלבד":"הצגת כל "+subRows.length+" הנושאים"}</button>`:""}
+  ${aiOn()?`<div class="row" style="margin-top:12px"><button class="btn" data-act="analyze">ניתוח ותוכנית חזרה מהמורה הדיגיטלי</button></div><div id="anal">${aiBoxHtml("an-"+E.start)}</div>`:""}</div>
+  <div class="card"><h3>סקירת התשובות</h3><div class="filters"><button class="chip" data-act="rf" data-v="all" aria-pressed="${resFilter==="all"}">הכל</button><button class="chip" data-act="rf" data-v="wrong" aria-pressed="${resFilter==="wrong"}">טעויות וחלקיות</button><button class="chip" data-act="rf" data-v="open" aria-pressed="${resFilter==="open"}">פתוחות</button><button class="link small" data-act="rvall">${openRv.size?"סגירת הכל":"פתיחת הכל"}</button></div>${rv}</div>
+  ${footer()}</main>`;
+}
+function reviewBody(it,i){
+  const q=QI[it.id];let h="";
+  if(it.f==="mc"){const mc=mcOf(it);
+    h+=`<div class="kv"><div class="lbl">התשובה שלך</div><div>${it.a==null?"לא נבחרה תשובה":optHtml(q,mc.opts[it.ord[it.a]])}</div></div>`;
+  }else{
+    h+=`<div class="kv"><div class="lbl">השאלה המלאה</div><div>${esc(q.q)}</div></div><div class="kv"><div class="lbl">התשובה שלך</div>${it.a?(q.cli?`<pre class="cli">${esc(it.a)}</pre>`:`<div style="white-space:pre-wrap">${esc(it.a)}</div>`):"<div>לא נכתבה תשובה</div>"}</div>`;
+  }
+  if(!it.r){h+=feedbackHtml(Object.assign({},it,{self:true}),false).replace(/data-act="self"/g,`data-act="rself" data-i="${i}"`);}
+  else h+=feedbackHtml(it,false);
+  const m=mini[i];
+  let miniH="";
+  if(m){
+    if(m.busy)miniH=`<div class="mini"><span class="spin"></span>מכין שאלה דומה…</div>`;
+    else if(m.err)miniH=`<div class="mini">${esc(m.err)}</div>`;
+    else if(m.q){miniH=`<div class="mini"><div class="lbl small muted">שאלה דומה לתרגול</div><p><strong>${esc(m.q)}</strong></p><ul class="opts">`+m.opts.map((o,k)=>{let c="";if(m.pick!=null){if(k===m.correct)c="right";else if(k===m.pick)c="wrong";}return `<li><button class="opt ${c}" data-act="mpick" data-i="${i}" data-k="${k}" ${m.pick!=null?"disabled":""}><span class="k">${LETTERS[k]}</span><span class="t">${esc(o)}</span></button></li>`;}).join("")+`</ul>${m.pick!=null?`<p style="margin-top:8px">${esc(m.explain)}</p>`:""}</div>`;}
+  }
+  h+=`<div class="row" style="margin-top:12px">${aiOn()?`<button class="btn sm" data-act="tutor-rv" data-i="${i}">שאלה למורה על השאלה</button><button class="btn sm ghost" data-act="similar" data-i="${i}">שאלה דומה לתרגול</button>`:""}</div>${miniH}`;
+  return h;
+}
+
+function vBank(){
+  const qs=Q.filter(q=>q.ch===bankCh);
+  const term=bankQ.trim().toLowerCase();
+  const pool=term?Q.filter(q=>(q.q+" "+q.a).toLowerCase().includes(term)):qs;
+  const subs=[...new Set(pool.map(q=>q.sub))];
+  const sec=subs.map(su=>{
+    const items=pool.filter(q=>q.sub===su).map(q=>{const s=S.st[q.id];const open=openBank.has(q.id);
+      return `<div class="bq" id="bq-${q.id}"><button data-act="bq" data-id="${q.id}" aria-expanded="${open}"><span class="st led ${s?s.l:""}" style="margin-top:7px;flex:none;cursor:inherit"></span><span class="num mono small muted" style="flex:none;width:28px">${q.n}</span><span style="flex:1">${esc(q.q)}</span></button>${open?`<div class="body"><div class="lbl small muted" style="font-weight:700">תשובת המפתח</div>${keyBlock(q)}${q.note?`<div class="note"><b>הערת דיוק</b>${esc(q.note)}</div>`:""}${aiOn()?`<div class="row" style="margin-top:8px"><button class="btn sm" data-act="tutor-bank" data-id="${q.id}">שאלה למורה</button></div>`:""}</div>`:""}</div>`;}).join("");
+    return `<div class="subh"><h3>${esc(SUB[su])}${term?` <span class="small muted">(${esc(CH[su[0]])})</span>`:""}</h3><button class="btn sm" data-act="practice" data-sub="${su}">תרגול הנושא</button></div>${items}`;
+  }).join("")||`<p class="muted">לא נמצאו שאלות עם ״${esc(bankQ)}״.</p>`;
+  const tabs=CH_ORDER.map(ch=>`<button class="chip" data-act="bch" data-v="${ch}" aria-pressed="${!term&&bankCh===ch}">${esc(CH[ch])} (${Q.filter(q=>q.ch===ch).length})</button>`).join("");
+  return topBar()+`<main class="wrap"><div class="row" style="justify-content:space-between;margin-top:6px"><h2 style="font-size:1.5rem">מאגר השאלות</h2><button class="btn sm ghost" data-act="home">לדף הבית</button></div>
+  <p class="muted small">כל ${Q.length} השאלות מהחוברת עם תשובות המפתח. ״תרגול הנושא״ פותח תרגול קצר עם משוב מיידי.</p>
+  <input class="search" id="bsearch" type="search" placeholder="חיפוש בשאלות ובתשובות, למשל VLAN או DHCP" value="${esc(bankQ)}" aria-label="חיפוש במאגר">
+  <div class="tabs" role="group" aria-label="פרקים">${tabs}</div>${sec}${footer()}</main>`;
+}
+
+function vHist(){
+  const rows=S.hist.map((h,i)=>{const {score,pend}=examScore(h);const t=h.kind==="practice"?"תרגול: "+esc(SUB[h.sub]):h.kind==="boost"?"מבחן חיזוק מס׳ "+h.no:"מבחן מס׳ "+h.no;
+    return `<button class="hrow" data-act="openres" data-i="${i}"><span><strong>${t}</strong><span class="small muted" style="display:block">${fmtDate(h.start)}, ${h.items.length} שאלות, ${h.fb==="now"?"משוב מיידי":"משוב בסוף"}${pend?`, ${pend} ממתינות לבדיקה`:""}</span></span><span class="sc">${score}</span></button>`;}).join("")||`<p class="muted">עוד לא נעשו מבחנים. המבחן הראשון יופיע כאן.</p>`;
+  const chBars=CH_ORDER.map(ch=>{const qs=Q.filter(q=>q.ch===ch);const ok=qs.filter(q=>S.st[q.id]&&S.st[q.id].l==="ok").length;const pct=Math.round(ok/qs.length*100);return `<div class="bar"><span>${esc(CH[ch])}</span><span class="track"><span class="fill" style="display:block;width:${pct}%"></span></span><span class="pct">${pct}%</span></div>`;}).join("");
+  const exams=S.hist.filter(h=>h.kind!=="practice").slice(0,10).reverse();
+  const trend=exams.length>1?`<p class="small muted" style="margin-top:10px">ציוני המבחנים האחרונים: <span class="mono" dir="ltr">${exams.map(h=>examScore(h).score).join(" , ")}</span></p>`:"";
+  return topBar()+`<main class="wrap"><div class="row" style="justify-content:space-between;margin-top:6px"><h2 style="font-size:1.5rem">היסטוריה והתקדמות</h2><button class="btn sm ghost" data-act="home">לדף הבית</button></div>
+  <div class="card" style="margin-top:12px"><h3>שליטה בחוברת לפי פרק</h3><p class="small muted">אחוז השאלות בפרק שנענו נכון בפעם האחרונה שהופיעו.</p><div class="bars">${chBars}</div>${trend}</div>
+  <div class="card">${rows}</div>
+  <div class="row" style="margin-top:16px"><button class="btn sm ghost" data-act="reset">מחיקת כל ההתקדמות</button></div>${footer()}</main>`;
+}
+
+/* ---------- דיווח למורה (גיליון Google דרך Apps Script) ---------- */
+function refreshSync(){
+  const el=$("#syncchip");if(!el)return;
+  el.innerHTML=sync.state==="ready"?'<span class="dot on"></span>'+esc(sync.msg||"הציונים נשלחים למורה"):"";
+}
+const KIND_HE=h=>h.kind==="practice"?"תרגול":h.kind==="boost"?"חיזוק":"מבחן";
+const nz=v=>v==null?"":v;
+function examPayload(h){
+  const {score,pend}=examScore(h);const cnt={ok:0,part:0,bad:0};const bySub={},byCh={};
+  h.items.forEach(it=>{const q=QI[it.id];[[bySub,q.sub],[byCh,q.ch]].forEach(([o,k])=>{const b=o[k]=o[k]||[0,0];b[1]++;if(it.r)b[0]+=it.r.sc;});if(it.r)cnt[lvl(it.r.sc)]++;});
+  const pct=o=>{const r={};Object.keys(o).forEach(k=>r[k]=Math.round(o[k][0]/o[k][1]*100));return r;};
+  const ch=pct(byCh),sb=pct(bySub);
+  const weak=Object.keys(sb).filter(k=>sb[k]<70).sort((a,b)=>sb[a]-sb[b]).slice(0,4).map(k=>SUB[k]+" "+sb[k]+"%").join("; ");
+  const BY={auto:"אוטומטי",ai:"AI",self:"עצמי"};
+  return {id:String(h.start),date:new Date(h.start).toISOString(),name:S.name||"",kind:KIND_HE(h),no:h.no||"",sub:h.sub?SUB[h.sub]:"",
+    fb:h.fb==="now"?"מיידי":"בסוף",mix:{mixed:"משולב",mc:"אמריקאיות",open:"פתוחות"}[h.mix]||"",score,ok:cnt.ok,part:cnt.part,bad:cnt.bad,pend,
+    minutes:h.end?Math.round((h.end-h.start)/6000)/10:"",ch:{c:nz(ch.c),p:nz(ch.p),t:nz(ch.t),m:nz(ch.m),s:nz(ch.s)},weak,ver:VERSION,
+    items:h.items.map(it=>{const q=QI[it.id];const ans=it.f==="mc"?(it.a==null?"":mcOf(it).opts[it.ord[it.a]]):(it.a||"");
+      return {ch:CH[q.ch],sub:SUB[q.sub],n:q.n,q:qTextOf(it),f:it.f==="mc"?"אמריקאית":"פתוחה",sc:it.r?Math.round(it.r.sc*100):"",by:it.r?(BY[it.r.by]||""):"",ans:String(ans).slice(0,2000),fb:it.r&&it.r.fb?String(it.r.fb).slice(0,600):""};})};
+}
+let pushing=false,pushAgain=false;
+async function pushReport(){
+  if(sync.state!=="ready")return;
+  if(pushing){pushAgain=true;return;}
+  pushing=true;let failed=false;
+  const todo=S.hist.filter(h=>h.dirty||!h.sentAt).slice(0,10);
+  for(const h of todo){
+    try{await api({action:"report",exam:examPayload(h)});h.dirty=false;h.sentAt=Date.now();S.synced=Date.now();sync.msg="";save();}
+    catch(e){failed=true;if(e&&e.code==="not_granted"){ai="denied";sync.state="off";}else sync.msg="השליחה למורה נכשלה, ננסה שוב";break;}
+  }
+  pushing=false;refreshSync();refreshAiChip();if(view==="home")render();
+  if(pushAgain||(!failed&&S.hist.some(h=>h.dirty||!h.sentAt))){pushAgain=false;setTimeout(pushReport,300);}
+}
+function connectCard(){
+  const on=sync.state==="ready";const cfg=!!apiUrl();
+  if(!cfg)return `<div class="card"><h3>חיבור למורה</h3><p class="small muted" style="margin:0">המערכת עובדת עם בדיקה עצמית. כדי לקבל בדיקה מהמורה הדיגיטלי ולשלוח ציונים, פתחו את הקישור שהמורה שלח.</p></div>`;
+  return `<div class="card ${on?"":"resume"}"><h3>חיבור למורה</h3>
+  <p class="small ${on?"muted":""}">${on?"מחובר. אחרי כל מבחן ותרגול נשלחים למורה השם, הציון, התשובות והמשוב.":ai==="checking"?"מתחבר…":"כתבו את השם שלכם והתחברו. אחרי כל מבחן ותרגול יישלחו למורה השם, הציון, התשובות והמשוב."}${!on&&sync.err?" "+esc(sync.err):""}</p>
+  <div class="field"><span>שם פרטי ושם משפחה</span><input class="search" id="sname" maxlength="80" value="${esc(S.name||"")}" placeholder="השם שיופיע אצל המורה"></div>
+  ${on||S.code?"":`<div class="field"><span>קוד גישה מהמורה</span><input class="search" id="scode" dir="ltr" autocomplete="off" value=""></div>`}
+  <div class="row"><button class="btn ${on?"sm":"primary"}" data-act="connect">${on?"שמירת השם":"התחברות"}</button></div>
+  ${S.synced?`<p class="small muted" style="margin:8px 0 0">נשלח למורה לאחרונה: ${fmtDate(S.synced)}</p>`:""}</div>`;
+}
+function freeCtx(text){
+  const STOP=new Set(["מה","של","את","על","זה","זו","איך","למה","מהו","מהי","מהם","מהן","הוא","היא","בין","או","עם","לי","אני","יש","אם","כל","גם","רק","מתי","איפה","שלי","הסבר","תסביר","לגבי","כמו","אבל","כן","לא","the","and","what"]);
+  const src=(text+" "+T.turns.filter(t=>t.role==="user").slice(-3).map(t=>t.content).join(" ")).toLowerCase();
+  const words=[...new Set(src.split(/[^\p{L}\p{N}]+/u).map(w=>w.replace(/^[והבלמש](?=[\u0590-\u05FF]{3,})/,"")).filter(w=>w.length>1&&!STOP.has(w)))];
+  const hits=Q.map(q=>{const hay=(q.q+" "+q.a+" "+SUB[q.sub]).toLowerCase();let s=0;words.forEach(w=>{if(hay.includes(w))s+=w.length>3?2:1;});return [s,q];}).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,14).map(x=>x[1]);
+  const topics=SUBS.map(k=>CH[k[0]]+" / "+SUB[k]).join("; ");
+  return `שאלה כללית של החניך. נושאי החוברת: ${topics}.\nקטעים רלוונטיים מהחוברת (שאלה ותשובת מפתח):\n\n`+(hits.length?hits.map(q=>`[${CH[q.ch]} ${q.n}] ${q.q}\nתשובה: ${q.a}${q.note?"\nהערת דיוק: "+q.note:""}`).join("\n\n"):"(לא נמצאו קטעים תואמים בחוברת — אפשר לענות מידע כללי, ולציין שהנושא לא מופיע בחוברת.)");
+}
+
+/* ---------- render ---------- */
+function render(){
+  const app=$("#app");
+  let h="";
+  if(view==="exam"&&S.cur)h=vExam();
+  else if(view==="grading")h=vGrading();
+  else if(view==="results")h=vResults();
+  else if(view==="bank")h=vBank();
+  else if(view==="hist")h=vHist();
+
+  else {view="home";h=vHome();}
+  app.innerHTML=h;refreshAiChip();refreshSync();
+  if(view==="exam"){const ta=$("#ans");if(ta&&!ta.readOnly&&window.innerWidth>=900)ta.focus({preventScroll:true});}
+}
+
+/* ---------- exam actions ---------- */
+function curItem(){return S.cur.items[S.cur.idx];}
+function syncAns(){const ta=$("#ans");if(ta&&S.cur){const it=curItem();if(it.f==="open"&&!it.r&&!it.self)it.a=ta.value;}}
+function goQ(i){syncAns();S.cur.idx=Math.max(0,Math.min(S.cur.items.length-1,i));save();render();window.scrollTo(0,0);}
+async function checkItem(){
+  const E=S.cur;const it=curItem();syncAns();
+  if(it.f==="mc"){if(it.a==null){toast("בחרו תשובה קודם");return;}it.r={sc:it.ord[it.a]===0?1:0,by:"auto"};save();render();return;}
+  const txt=(it.a||"").trim();
+  if(!txt){it.r={sc:0,fb:"לא נכתבה תשובה.",by:"auto"};save();render();return;}
+  if(aiOn()){
+    it.busy=true;render();
+    try{it.r=await aiGrade(it);}catch(e){it.self=true;it.aiMsg=aiErr(e)||"הבדיקה האוטומטית לא הצליחה — אפשר לבדוק בעצמך.";}
+    delete it.busy;save();if(S.cur===E&&view==="exam")render();return;
+  }
+  it.self=true;save();render();
+}
+function askFinish(){
+  syncAns();const E=S.cur;
+  const un=E.items.filter(it=>it.a==null||it.a==="").length;
+  const unchecked=E.fb==="now"?E.items.filter(it=>!it.r&&!it.self&&it.a!=null&&it.a!=="").length:0;
+  let msg=un?`${un} שאלות לא נענו ויקבלו 0.`:"כל השאלות נענו.";
+  if(unchecked)msg+=` ${unchecked} תשובות עוד לא נבדקו — הן ייבדקו עכשיו.`;
+  modal(E.fb==="now"?"לסיים את המבחן?":"להגיש את המבחן?",msg,[["חזרה למבחן","",null],[E.fb==="now"?"סיום":"הגשה","primary",finishExam]]);
+}
+async function finishExam(){
+  const E=S.cur;if(!E)return;syncAns();E.end=Date.now();
+  E.items.forEach(it=>{delete it.busy;
+    if(it.r)return;
+    if(it.f==="mc"){it.r={sc:it.a!=null&&it.ord[it.a]===0?1:0,by:"auto"};return;}
+    if(!(it.a||"").trim()){it.r={sc:0,fb:"לא נכתבה תשובה.",by:"auto"};it.self=false;}
+  });
+  const pend=E.items.filter(it=>!it.r);
+  if(pend.length&&aiOn()){
+    grading=[0,pend.length];view="grading";render();
+    try{await aiGradeBatch(pend,(a,b)=>{grading=[a,b];if(view==="grading")render();});}
+    catch(e){const m=aiErr(e);if(m)toast(m);}
+  }
+  E.items.forEach(it=>{if(!it.r)it.self=true;else it.self=false;countItem(it);});
+  E.dirty=true;S.hist.unshift(E);if(S.hist.length>60)S.hist.length=60;S.cur=null;save();pushReport();
+  grading=null;resIdx=0;resFilter=E.items.some(it=>!it.r)?"wrong":"all";openRv=new Set();mini={};
+  view="results";render();window.scrollTo(0,0);
+}
+
+/* ---------- tutor ---------- */
+const TUTOR_RULES=`אתה מורה פרטי סבלני לחניך בקורס טכנאי רשת. הקורס מבוסס על ״חוברת שאלות לתרגול — טכנאי רשת״ (תקשורת, Packet Tracer, תקשורת IT וטלפוניה, מחשוב, שרתים).
+הנחיות:
+- ענה בעברית פשוטה וברורה, בקצרה (עד כ-120 מילים) אלא אם החניך ביקש להרחיב.
+- הסבר את ה״למה״, תן דוגמה או אנלוגיה מוחשית, ובסוף, כשזה מתאים, שאל שאלה קצרה לבדיקת הבנה.
+- מונחים טכניים כתוב באנגלית כפי שהם (VLAN, STP, DHCP). פקודות CLI כתוב כל אחת בשורה נפרדת.
+- בפרטים ארגוניים או צבאיים (מגזרים, מספרי VLAN בחיל, שרתים ומיקומם, נהלים, תוכנות פנימיות) הסתמך רק על החוברת; אם המידע לא שם — אמור שאינך יודע ושכדאי לשאול את המדריך.
+- כשהחוברת אינה מדויקת טכנית, אמור מה כתוב בחוברת ומה נכון בפועל, והמלץ לזכור את שניהם.
+- כשהחניך מבקש ״לבחון אותו״, שאל שאלה אחת בכל פעם וחכה לתשובה.
+- עיצוב: בלי כותרות. מותר **הדגשה** ורשימות עם מקף.
+- פנה בגוף שני ובצורה ניטרלית מגדרית ככל האפשר.`;
+let T={key:null,title:"",ctx:"",turns:[],busy:false,ctl:null,chips:[]};
+let BANK_TXT=null;
+function bankText(){if(!BANK_TXT)BANK_TXT=Q.map(q=>`[${CH[q.ch]} ${q.n}] ${q.q}\nתשובה: ${q.a}${q.note?"\nהערת דיוק: "+q.note:""}`).join("\n\n");return BANK_TXT;}
+function qContext(q,it){
+  let c=`החניך שואל על שאלה מהחוברת.\nפרק: ${CH[q.ch]}, נושא: ${SUB[q.sub]}, שאלה ${q.n}.\nהשאלה בחוברת: ${q.q}\nתשובת המפתח: ${q.a}${q.note?"\nהערת דיוק: "+q.note:""}`;
+  if(it){
+    if(it.f==="mc"){const mc=mcOf(it);c+=`\nהשאלה כפי שהוצגה (אמריקאית): ${mc.text}\nהתשובה הנכונה: ${mc.opts[0]}\nהחניך בחר: ${it.a==null?"לא בחר":mc.opts[it.ord[it.a]]}`;}
+    else c+=`\nתשובת החניך: ${it.a||"(ריקה)"}`;
+    if(it.r)c+=`\nתוצאה: ${LVL_TXT[lvl(it.r.sc)]}${it.r.fb?" — "+it.r.fb:""}`;
+  }
+  return c;
+}
+function openTutor(key,title,ctx,chips){
+  if(T.key!==key){if(T.ctl)T.ctl.abort();T={key,title,ctx,turns:[],busy:false,ctl:null,chips};}
+  $("#drawer").classList.add("show");$("#scrim").classList.add("show");renderTutor();
+  setTimeout(()=>$("#tin").focus(),50);
+}
+function closeTutor(){$("#drawer").classList.remove("show");if(!$("#modal").classList.contains("show"))$("#scrim").classList.remove("show");}
+function renderTutor(){
+  $("#dsub").textContent=T.title;
+  const m=$("#msgs");
+  m.innerHTML=T.turns.length?T.turns.map(t=>`<div class="msg ${t.role==="user"?"u":"a"}${t.err?" err":""}">${t.role==="user"?esc(t.content).replace(/\n/g,"<br>"):(t.content?md(t.content):(t.err?"":'<span class="spin"></span>חושב…'))}${t.err?`<p class="small">${esc(t.err)}</p>`:""}</div>`).join(""):`<p class="muted small">אפשר לשאול כל דבר על ${esc(T.title||"החומר")}. המורה רואה את השאלה ואת תשובת המפתח.</p>`;
+  m.scrollTop=m.scrollHeight;
+  $("#tchips").innerHTML=T.busy?`<button class="chip" data-act="tstop">עצירה</button>`:T.chips.map(c=>`<button class="chip" data-act="tchip">${esc(c)}</button>`).join("");
+  $("#tsend").disabled=T.busy;
+}
+async function sendTutor(text){
+  text=(text||"").trim();if(!text||T.busy||!aiOn())return;
+  const user={role:"user",content:text};const asst={role:"assistant",content:""};
+  T.turns.push(user,asst);T.busy=true;renderTutor();
+  if(T.key==="free")T.ctx=freeCtx(text);
+  const hist=T.turns.slice(0,-1).filter(t=>!t.err||t.content);
+  const input=[{role:"user",content:TUTOR_RULES+"\n\n"+T.ctx},{role:"assistant",content:"הבנתי. אני כאן כדי לעזור."},...hist.map(t=>({role:t.role,content:t.content}))];
+  const ctl=new AbortController();T.ctl=ctl;const myKey=T.key;
+  try{
+    const r=await sample(input,{cache:false,signal:ctl.signal,modelTier:"quick",onText:({text})=>{asst.content=text;const el=$("#msgs").lastElementChild;if(el&&T.key===myKey){el.innerHTML=md(text);$("#msgs").scrollTop=1e9;}}});
+    asst.content=r.text;
+  }catch(e){
+    asst.content=e&&e.text||"";const msg=aiErr(e);
+    if(!asst.content){T.turns.splice(T.turns.indexOf(user),2);$("#tin").value=text;if(msg)toast(msg);}
+    else if(msg)asst.err=msg;
+  }
+  if(T.key===myKey){T.busy=false;T.ctl=null;renderTutor();}
+}
+$("#tform").addEventListener("submit",e=>{e.preventDefault();const v=$("#tin").value;$("#tin").value="";sendTutor(v);});
+$("#tin").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("#tform").requestSubmit();}});
+const Q_CHIPS=["הסבר לי את התשובה במילים פשוטות","תן דוגמה מהשטח","למה התשובה שלי לא מספיקה?","בחן אותי בשאלה דומה"];
+
+/* ---------- analysis & similar ---------- */
+async function analyze(){
+  const E=S.hist[resIdx];const box=$("#anal");if(!E||!box||!aiOn())return;
+  const bySub={};E.items.forEach(it=>{const q=QI[it.id];const b=bySub[q.sub]=bySub[q.sub]||{n:0,s:0};b.n++;if(it.r)b.s+=it.r.sc;});
+  const lines=Object.keys(bySub).map(su=>`${CH[su[0]]} / ${SUB[su]}: ${Math.round(bySub[su].s/bySub[su].n*100)}%`).join("\n");
+  const wrong=E.items.filter(it=>it.r&&lvl(it.r.sc)!=="ok").slice(0,14).map(it=>{const q=QI[it.id];const ans=it.f==="mc"?(it.a==null?"לא ענה":mcOf(it).opts[it.ord[it.a]]):(it.a||"ריקה");return `- [${CH[q.ch]} ${q.n}] ${qTextOf(it)}\n  החניך: ${String(ans).slice(0,300)}\n  המפתח: ${q.a.slice(0,300)}`;}).join("\n");
+  const hist=S.hist.filter(h=>h.kind!=="practice").slice(0,6).map(h=>examScore(h).score).reverse().join(", ");
+  const prompt=`${TUTOR_RULES}
+
+נתח את תוצאות המבחן של החניך וכתוב תוכנית חזרה קצרה (עד 200 מילים):
+1. משפט פתיחה על המצב הכללי.
+2. 3 נושאים לחיזוק — לכל אחד: מה כנראה לא ברור (לפי הטעויות) ומה לחזור עליו בחוברת (פרק ומספרי שאלות).
+3. המלצה לצעד הבא במערכת: ״מבחן חיזוק״, ״תרגול נושא״ מסוים מהמאגר, או ״מבחן חדש״.
+
+ציון: ${examScore(E).score}/100. ציונים במבחנים האחרונים (מהישן לחדש): ${hist}
+ביצועים לפי נושא:
+${lines}
+שאלות שנענו לא נכון או חלקית:
+${wrong||"אין"}`;
+  aiStream("an-"+E.start,"anal","המורה הדיגיטלי מנתח את המבחן… (עד דקה)",prompt);
+}
+async function similar(i){
+  const E=S.hist[resIdx];const it=E.items[i];const q=QI[it.id];
+  mini[i]={busy:true};render();
+  const prompt=`צור שאלה אמריקאית חדשה אחת לתרגול, על אותו נושא כמו השאלה הבאה מקורס טכנאי רשת, אבל בדגש אחר או מזווית אחרת. הסתמך רק על המידע בתשובת המפתח${q.note?" ובהערת הדיוק":""} — אל תמציא פרטים ארגוניים או צבאיים.
+4 אפשרויות, בדיוק אחת נכונה, המסיחים סבירים. בעברית; מונחים טכניים באנגלית.
+החזר JSON בלבד: {"q":"","options":["","","",""],"correct":0,"explain":"הסבר קצר למה התשובה נכונה"}
+
+שאלה: ${q.q}
+תשובת המפתח: ${q.a}${q.note?"\nהערת דיוק: "+q.note:""}`;
+  try{
+    const r=await sample.json(prompt,{modelTier:"quick",cache:false});
+    if(!r||!r.q||!Array.isArray(r.options)||r.options.length!==4||!(r.correct>=0&&r.correct<4))throw {code:"bad_json"};
+    mini[i]={q:String(r.q),opts:r.options.map(String),correct:Number(r.correct),explain:String(r.explain||""),pick:null};
+  }catch(e){mini[i]={err:aiErr(e)||"לא הצלחתי ליצור שאלה דומה. נסו שוב."};}
+  if(view==="results")render();
+}
+
+/* ---------- modal ---------- */
+function modal(title,body,btns){
+  $("#mt").textContent=title;$("#mb").textContent=body;const f=$("#mf");f.innerHTML="";
+  btns.forEach(([t,cls,fn])=>{const b=document.createElement("button");b.className="btn "+(cls||"");b.textContent=t;b.onclick=()=>{closeModal();if(fn)fn();};f.appendChild(b);});
+  $("#modal").classList.add("show");$("#scrim").classList.add("show");setTimeout(()=>f.lastChild&&f.lastChild.focus(),30);
+}
+function closeModal(){$("#modal").classList.remove("show");if(!$("#drawer").classList.contains("show"))$("#scrim").classList.remove("show");}
+$("#scrim").addEventListener("click",()=>{closeModal();closeTutor();});
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const a=b.dataset.act;
+  switch(a){
+    case "set":S.set[b.dataset.k]=b.dataset.v;save();render();break;
+    case "new":
+      if(S.cur){modal("יש מבחן בתהליך","התחלת מבחן חדש תמחק את המבחן שלא הסתיים.",[["ביטול","",null],["מחיקה והתחלה","primary",()=>{S.cur=null;startExam(b.dataset.kind);}]]);}
+      else startExam(b.dataset.kind);break;
+    case "practice":
+      if(S.cur){modal("יש מבחן בתהליך","פתיחת תרגול תמחק את המבחן שלא הסתיים.",[["ביטול","",null],["מחיקה ותרגול","primary",()=>{S.cur=null;startExam("practice",b.dataset.sub);}]]);}
+      else startExam("practice",b.dataset.sub);break;
+    case "resume":view="exam";portsOpen=window.innerWidth>=640;render();break;
+    case "discard":modal("למחוק את המבחן?","התשובות במבחן הזה לא יישמרו.",[["ביטול","",null],["מחיקה","primary",()=>{S.cur=null;save();render();}]]);break;
+    case "home":syncAns();save();view="home";render();window.scrollTo(0,0);break;
+    case "go":view=b.dataset.v;render();window.scrollTo(0,0);break;
+    case "opt":{const it=curItem();if(S.cur.fb==="now"&&it.r)return;it.a=Number(b.dataset.i);save();render();break;}
+    case "check":checkItem();break;
+    case "next":syncAns();if(S.cur.fb==="now"){const it=curItem();if(!it.r&&!it.self&&it.a!=null&&it.a!==""){checkItem();return;}}goQ(S.cur.idx+1);break;
+    case "skip":goQ(S.cur.idx+1);break;
+    case "prev":goQ(S.cur.idx-1);break;
+    case "goq":goQ(Number(b.dataset.i));break;
+    case "ports":portsOpen=!portsOpen;render();break;
+    case "finish":askFinish();break;
+    case "self":{const it=curItem();const v=Number(b.dataset.v);it.r={sc:v,by:"self"};it.self=false;save();render();break;}
+    case "rself":{const E=S.hist[resIdx];const it=E.items[Number(b.dataset.i)];it.r={sc:Number(b.dataset.v),by:"self"};it.self=false;countItem(it);E.dirty=true;save();render();pushReport();break;}
+    case "rf":resFilter=b.dataset.v;render();break;
+    case "bars":allBars=!allBars;render();break;
+    case "rv":{const i=Number(b.dataset.i);openRv.has(i)?openRv.delete(i):openRv.add(i);render();break;}
+    case "rvall":{const E=S.hist[resIdx];openRv=openRv.size?new Set():new Set(E.items.map((_,i)=>i));render();break;}
+    case "openres":resIdx=Number(b.dataset.i);resFilter="all";openRv=new Set();mini={};view="results";render();window.scrollTo(0,0);break;
+    case "analyze":analyze();break;
+    case "similar":similar(Number(b.dataset.i));break;
+    case "mpick":{const m=mini[Number(b.dataset.i)];if(m&&m.pick==null){m.pick=Number(b.dataset.k);render();}break;}
+    case "bch":bankCh=b.dataset.v;bankQ="";render();break;
+    case "bq":{const id=b.dataset.id;openBank.has(id)?openBank.delete(id):openBank.add(id);render();break;}
+    case "ledgo":{const q=QI[b.dataset.id];bankCh=q.ch;bankQ="";openBank.add(q.id);view="bank";render();const el=document.getElementById("bq-"+q.id);if(el)el.scrollIntoView({block:"center"});break;}
+    case "reset":modal("למחוק את כל ההתקדמות?","ההיסטוריה, הסטטיסטיקה ומבחן בתהליך יימחקו מהדפדפן הזה.",[["ביטול","",null],["מחיקה","primary",()=>{const keep={set:S.set,name:S.name,api:S.api,code:S.code};S=Object.assign(def(),keep);S.dirty=true;save();view="home";render();pushReport();}]]);break;
+    case "tutor-free":if(aiOn())openTutor("free","כל החומר בחוברת",freeCtx(""),["סכם לי את נושא VLAN","מה ההבדל בין TCP ל-UDP?","בחן אותי על STP","איך זוכרים את שכבות ה-OSI?"]);break;
+    case "tutor-q":{const it=curItem();const q=QI[it.id];openTutor("ex-"+S.cur.start+"-"+S.cur.idx,`${CH[q.ch]}, שאלה ${q.n}`,qContext(q,it),Q_CHIPS);break;}
+    case "tutor-rv":{const E=S.hist[resIdx];const it=E.items[Number(b.dataset.i)];const q=QI[it.id];openTutor("rv-"+E.start+"-"+b.dataset.i,`${CH[q.ch]}, שאלה ${q.n}`,qContext(q,it),Q_CHIPS);break;}
+    case "tutor-bank":{const q=QI[b.dataset.id];openTutor("bank-"+q.id,`${CH[q.ch]}, שאלה ${q.n}`,qContext(q,null),["הסבר לי את התשובה במילים פשוטות","תן דוגמה מהשטח","איך לזכור את זה?","בחן אותי בשאלה דומה"]);break;}
+    case "tclose":closeTutor();break;
+    case "connect":{const n=$("#sname"),c=$("#scode");const nn=n?n.value.trim().slice(0,80):S.name;if(nn!==S.name){S.name=nn;S.hist.forEach(h=>h.dirty=true);}if(c&&c.value.trim())S.code=c.value.trim();save();if(sync.state==="ready"){pushReport();toast("השם נשמר");render();}else connect();break;}
+    case "tchip":sendTutor(b.textContent);break;
+    case "tstop":if(T.ctl)T.ctl.abort();break;
+  }
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="ans"&&S.cur){const it=curItem();if(it.f==="open"&&!it.r&&!it.self){it.a=e.target.value;saveSoon();}}
+  if(e.target.id==="bsearch"){bankQ=e.target.value;const pos=e.target.selectionStart;render();const s=$("#bsearch");if(s){s.focus();try{s.setSelectionRange(pos,pos);}catch(_){}}}
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){closeModal();closeTutor();return;}
+  if(view!=="exam"||!S.cur)return;
+  if(e.target.tagName==="TEXTAREA"||e.target.tagName==="INPUT")return;
+  if($("#modal").classList.contains("show")||$("#drawer").classList.contains("show"))return;
+  const it=curItem();
+  if(it.f==="mc"&&/^[1-4]$/.test(e.key)&&!(S.cur.fb==="now"&&it.r)){it.a=Number(e.key)-1;save();render();}
+  else if(e.key==="Enter"){const p=document.querySelector(".actions .btn.primary");if(p)p.click();}
+});
+setInterval(()=>{if(view==="exam"&&S.cur){const t=$("#timer");if(t)t.textContent=fmtTime(Date.now()-S.cur.start);}},1000);
+window.addEventListener("pagehide",()=>{syncAns();save();});
+render();
+connect();
+</script>
+</body>
+</html>
